@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.tfstate*
+.terraform/
+
+# raw source PDFs and any bulk-derived corpus stay out of git history —
+# tracked with DVC from Module 2 onward instead.
+data/raw/*.pdf
+data/processed/*.json
+!data/processed/.gitkeep
+
+*.pkl
+mlruns/

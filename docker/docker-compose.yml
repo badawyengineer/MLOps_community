@@ -1,0 +1,14 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: prodml-legal-qa:0.1.0
+    ports:
+      - "8000:8000"
+    environment:
+      PRODML_LOG_LEVEL: INFO
+      PRODML_TOP_K: "3"
+    volumes:
+      - ../data/processed:/app/data/processed:ro
+    restart: unless-stopped
