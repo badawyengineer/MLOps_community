@@ -129,7 +129,9 @@ def _checks(client: Any, live: bool) -> list[tuple[str, Callable[[], str]]]:
                 if settings.corpus_path.exists()
                 else sample_corpus()
             )
-            r = evaluate(build_retriever("hybrid").fit(arts), load_eval_set(), k=1, threshold=0.2)
+            r = evaluate(
+                build_retriever(settings.retriever).fit(arts), load_eval_set(), k=1, threshold=0.2
+            )
             gates = json.loads(Path("data/eval/thresholds.json").read_text())
             failures = check_gates(r, gates)
             assert not failures, failures

@@ -83,7 +83,7 @@ def test_metrics_endpoint_reports_abstentions_and_requests(client: TestClient) -
 
 def test_metadata_reports_retriever_and_threshold(client: TestClient) -> None:
     meta = client.get("/metadata").json()
-    assert meta["retriever"] == "hybrid" and meta["min_confidence"] == 0.2
+    assert meta["retriever"] == "hybrid-dense" and meta["min_confidence"] == 0.2
 
 
 def test_ask_response_has_generation_and_guardrail_fields(client: TestClient) -> None:

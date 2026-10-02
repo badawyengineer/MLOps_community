@@ -1,5 +1,5 @@
 {
-  "_note": "CI regression gates for `prodml-eval --retriever hybrid --k 1 --threshold 0.2`. Set just below the measured values (hit@1 0.94, MRR 0.94, correct-abstain 0.86, false-abstain 0.0) so noise doesn't fail CI but real regressions do. Tighten as the eval set grows.",
+  "_note": "CI regression gates for `prodml-eval --retriever hybrid-dense --k 1 --threshold 0.2`. Set just below the measured values (hit@1 0.94, MRR 0.94, correct-abstain 0.86, false-abstain 0.0) so noise doesn't fail CI but real regressions do. Tighten as the eval set grows.",
   "hit_at_k": 0.88,
   "mrr": 0.88,
   "correct_abstain_rate": 0.80,

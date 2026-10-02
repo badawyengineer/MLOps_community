@@ -8,11 +8,15 @@ FROM python:3.11-slim AS runtime
 RUN useradd --create-home --uid 1000 appuser
 COPY --from=builder /install /usr/local
 WORKDIR /app
-# Bake the bootstrap corpus in at build time (falls back to the sample
-# corpus since no raw PDF is shipped in the image) — swap for a
-# DVC-pulled real corpus once Module 2's data versioning is wired in.
-RUN python -m prodml.corpus && chown -R appuser:appuser /app/data
+# The image is self-contained: corpus + eval questions + the PRE-BUILT vector index are baked in
+# at build time, so a container starts serving with no external store and no model download.
+COPY data/processed/ ./data/processed/
+COPY data/eval/ ./data/eval/
+RUN python -m prodml.validate_corpus \
+ && python -m prodml.indexing \
+ && chown -R appuser:appuser /app/data
 USER appuser
+ENV PRODML_RETRIEVER=hybrid-dense
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
     CMD python -c "import urllib.request;urllib.request.urlopen('http://localhost:8000/health')"
