@@ -46,6 +46,13 @@ fixtures = [
 [project.scripts]
 prodml-build-corpus = "prodml.corpus:main"
 prodml-eval = "prodml.evaluation:main"
+prodml-smoke = "prodml.smoke:main"
+prodml-index = "prodml.indexing:main"
+prodml-reindex = "prodml.reindex:main"
+prodml-ingest = "prodml.ingest:main"
+prodml-monitor = "prodml.monitor:main"
+prodml-experiments = "prodml.experiments:main"
+prodml-compare-llms = "prodml.compare_llms:main"
 
 [build-system]
 requires = ["setuptools>=68"]
