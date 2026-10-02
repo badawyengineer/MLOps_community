@@ -39,3 +39,18 @@ def test_metadata_reports_loaded_state(trained_predictor: LegalQAPredictor) -> N
 def test_unanswerable_question_does_not_crash(trained_predictor: LegalQAPredictor) -> None:
     result = trained_predictor.query_one("zzz gibberish qqq unrelated")
     assert "sources" in result
+
+
+def test_out_of_scope_question_abstains(trained_predictor: LegalQAPredictor) -> None:
+    result = trained_predictor.query_one("كيف أطبخ الكشري؟")
+    assert result["abstained"] is True
+    assert result["sources"] == [] and result["scores"] == []
+    assert "not answering" in result["answer"]
+
+
+def test_in_scope_question_cites_and_does_not_abstain(trained_predictor: LegalQAPredictor) -> None:
+    result = trained_predictor.query_one("Must contracts be performed in good faith?")
+    assert result["abstained"] is False
+    assert result["sources"][0] == "Egyptian Civil Code, Article 148"
+    assert result["confidence"] >= 0.2
+    assert "not legal advice" in result["disclaimer"]

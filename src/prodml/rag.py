@@ -18,11 +18,17 @@ from typing import Any, TypeVar
 
 from prodml.config import settings
 from prodml.corpus import Article, load_corpus, sample_corpus
-from prodml.retriever import ScoredArticle, TfidfRetriever
+from prodml.retriever import Retriever, ScoredArticle, build_retriever
 
 logger = logging.getLogger(__name__)
 
 F = TypeVar("F", bound=Callable[..., Any])
+
+ABSTAIN_MESSAGE = (
+    "I could not find an article in the indexed corpus that addresses this question "
+    "with enough confidence, so I am not answering. Please rephrase, or consult a lawyer."
+)
+DISCLAIMER = "Informational retrieval over statute text only; not legal advice."
 
 
 def timed(func: F) -> F:
@@ -56,7 +62,7 @@ class LegalQAPredictor:
     def __init__(self, corpus_path: Path | None = None, top_k: int | None = None) -> None:
         self._corpus_path = corpus_path or settings.corpus_path
         self._top_k = top_k or settings.top_k
-        self._retriever: TfidfRetriever | None = None
+        self._retriever: Retriever | None = None
         self._articles: list[Article] = []
         self._loaded_at: float | None = None
 
@@ -76,7 +82,7 @@ class LegalQAPredictor:
             )
             self._articles = sample_corpus()
 
-        self._retriever = TfidfRetriever().fit(self._articles)
+        self._retriever = build_retriever(settings.retriever).fit(self._articles)
         self._loaded_at = time.time()
         logger.info("Loaded %d articles into the retriever.", len(self._articles))
         return self
@@ -86,6 +92,8 @@ class LegalQAPredictor:
             "model_version": settings.model_version,
             "articles_indexed": len(self._articles),
             "generation_backend": settings.generation_backend,
+            "retriever": settings.retriever,
+            "min_confidence": settings.min_confidence,
             "loaded_at": self._loaded_at,
         }
 
@@ -95,11 +103,21 @@ class LegalQAPredictor:
             raise RuntimeError("LegalQAPredictor.load() must be called before query_one().")
 
         matches = self._retriever.query(question, top_k=self._top_k)
-        answer = self._generate(question, matches)
+        confidence = round(matches[0].score, 4) if matches else 0.0
+        abstained = not matches or confidence < settings.min_confidence
+        if abstained:
+            # Refuse rather than answer from an article that doesn't actually address the question.
+            answer = ABSTAIN_MESSAGE
+            matches = []
+        else:
+            answer = self._generate(question, matches)
         return {
             "answer": answer,
             "sources": [m.article["citation"] for m in matches],
             "scores": [round(m.score, 4) for m in matches],
+            "abstained": abstained,
+            "confidence": confidence,
+            "disclaimer": DISCLAIMER,
         }
 
     def query_batch(self, questions: list[str]) -> list[dict[str, Any]]:

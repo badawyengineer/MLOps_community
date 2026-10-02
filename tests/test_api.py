@@ -64,3 +64,23 @@ def test_ask_batch_happy_path(client: TestClient) -> None:
 def test_ask_batch_rejects_empty_list(client: TestClient) -> None:
     response = client.post("/ask/batch", json={"questions": []})
     assert response.status_code == 422
+
+
+def test_ask_exposes_confidence_and_abstention(client: TestClient) -> None:
+    body = client.post("/ask", json={"question": "What is the penalty for drunk driving?"}).json()
+    assert body["abstained"] is True and body["sources"] == []
+    ok = client.post("/ask", json={"question": "Must contracts be performed in good faith?"}).json()
+    assert ok["abstained"] is False and ok["confidence"] > 0
+
+
+def test_metrics_endpoint_reports_abstentions_and_requests(client: TestClient) -> None:
+    client.post("/ask", json={"question": "كيف أطبخ الكشري؟"})
+    text = client.get("/metrics").text
+    assert "prodml_abstentions_total" in text
+    assert 'prodml_requests_total{path="/ask",status="200"}' in text
+    assert "prodml_top_score_bucket" in text
+
+
+def test_metadata_reports_retriever_and_threshold(client: TestClient) -> None:
+    meta = client.get("/metadata").json()
+    assert meta["retriever"] == "hybrid" and meta["min_confidence"] == 0.2

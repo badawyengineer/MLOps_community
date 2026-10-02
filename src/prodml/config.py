@@ -20,6 +20,8 @@ class Settings(BaseSettings):
 
     # --- retrieval ---
     top_k: int = 3
+    retriever: str = "hybrid"  # "tfidf" | "bm25" | "hybrid" | "embedding"
+    min_confidence: float = 0.2  # abstain when the top score is below this (calibrate via eval)
     max_context_chars: int = 4000
 
     # --- service ---
