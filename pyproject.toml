@@ -32,6 +32,11 @@ tracking = [
 pdf = [
     "pdfplumber>=0.11",
 ]
+fixtures = [
+    "reportlab>=4.0",
+    "arabic-reshaper>=3.0",
+    "python-bidi>=0.5",
+]
 
 [project.scripts]
 prodml-build-corpus = "prodml.corpus:main"

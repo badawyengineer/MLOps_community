@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     # --- corpus / data ---
     raw_pdf_path: Path = Path("data/raw/egyptian_civil_code.pdf")
     corpus_path: Path = Path("data/processed/articles.json")
+    repealed_ranges: str = "54-80"  # Presidential-Decree-repealed articles, flagged not dropped
 
     # --- retrieval ---
     top_k: int = 3

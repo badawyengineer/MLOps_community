@@ -44,7 +44,7 @@ class Retriever(Protocol):
 
 
 def _index_text(a: Article) -> str:
-    return normalize_for_search(f"{a['topic']} {a['ar_text']} {a['text_en']}")
+    return normalize_for_search(f"{a['topic']} {a['text_ar']} {a['text_en']}")
 
 
 def _top_k(articles: list[Article], scores: np.ndarray, top_k: int) -> list[ScoredArticle]:
@@ -185,7 +185,7 @@ class Bm25Retriever:
 
     def fit(self, articles: list[Article]) -> Bm25Retriever:
         self._articles = articles
-        docs = [tokenize(f"{a['topic']} {a['ar_text']} {a['text_en']}") for a in articles]
+        docs = [tokenize(f"{a['topic']} {a['text_ar']} {a['text_en']}") for a in articles]
         self._tf = [Counter(d) for d in docs]
         self._lengths = np.array([len(d) for d in docs], dtype=float)
         self._avgdl = float(self._lengths.mean()) if len(docs) else 0.0
