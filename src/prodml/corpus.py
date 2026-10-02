@@ -42,6 +42,9 @@ logger = logging.getLogger(__name__)
 # Arabic-Indic digits -> Western digits, so article_number can be an int
 _ARABIC_INDIC_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩", "0123456789")
 
+# Extended (Persian/Urdu) digits, which show up in PDF extractions from mixed-font sources
+_EXTENDED_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")
+
 # Arabic diacritics (harakat, tanween, sukun, shadda, quranic marks)
 _DIACRITICS_RE = re.compile(r"[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]")
 
@@ -91,10 +94,14 @@ def normalize_for_search(text: str) -> str:
     matches an article that has one.
     """
     text = normalize_arabic_text(text)
+    text = text.replace("\u0640", "")  # tatweel (kashida) elongation
+    text = arabic_indic_to_western(text)
+    text = text.translate(_EXTENDED_DIGITS)  # Persian/Urdu digit forms
     text = re.sub(r"[إأآا]", "ا", text)
     text = text.replace("ة", "ه")
     text = text.replace("ى", "ي")
-    return text
+    text = text.replace("ک", "ك").replace("ی", "ي")  # Persian kaf / yeh -> Arabic
+    return text.lower()
 
 
 def sample_corpus() -> list[Article]:
