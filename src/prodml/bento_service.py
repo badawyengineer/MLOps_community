@@ -50,5 +50,7 @@ class LegalQAService:
 
     @bentoml.api
     def health(self) -> dict[str, Any]:
-        return {"status": "healthy" if self.predictor.is_loaded else "loading",
-                "documents_indexed": self.predictor.metadata()["articles_indexed"]}
+        return {
+            "status": "healthy" if self.predictor.is_loaded else "loading",
+            "documents_indexed": self.predictor.metadata()["articles_indexed"],
+        }

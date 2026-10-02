@@ -181,6 +181,15 @@ class LegalQAPredictor:
             "loaded_at": self._loaded_at,
         }
 
+    def contexts_for(self, sources: list[str]) -> list[str]:
+        """Article text behind a list of citations (for RAGAS / offline scoring)."""
+        wanted = {c.rsplit("Article ", 1)[-1].split()[0] for c in sources}
+        return [
+            f"{a['text_en']} {a['text_ar']}"
+            for a in self._articles
+            if str(a["article_number"]) in wanted
+        ]
+
     # ---- shared steps -------------------------------------------------------------------
     def _retrieve(self, question: str) -> Retrieval:
         if not self.is_loaded:
