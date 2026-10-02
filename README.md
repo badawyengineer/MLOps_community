@@ -5,9 +5,9 @@ Track B final project for **The MLOps Practitioner** (ITI x MLOps MENA Community
 [`reports/track-decision.md`](reports/track-decision.md) for why this track, and the handbook's
 "Final Project — Track B" section for the full spec this repo builds toward.
 
-**Status: Module 1 of 5 complete** (packaging, API, tests, containerization). Modules 2–5
-(tracking/versioning/CI, serving/release, optimization, observability) are tracked as
-`module-2-...` through `module-5-...` branches per the collaboration protocol.
+**Status: Module 1 complete; Module 2 work (evaluation, retrieval comparison, CI, versioning,
+tracking, first observability pieces) is on branch `module-2-eval-and-retrieval`.** Modules 3–5
+(real generation/serving, optimization, full observability) are not started.
 
 ## Quickstart (3 commands)
 
@@ -42,9 +42,13 @@ applies to the README too, not just the final report.
 | Piece | Status |
 |---|---|
 | Corpus | **Sample only** — 5 hand-verified real articles (1, 60 [repealed], 147, 148, 163). The full ~1,150-article corpus needs the actual Civil Code PDF ingested (see below). |
-| Retrieval | **Real, working** — TF-IDF + cosine similarity over normalized Arabic text (`src/prodml/retriever.py`). Deliberately dependency-light so the whole service runs offline; Module 2 benchmarks this against a real multilingual embedding model. |
-| Generation | **Extractive placeholder** — `/ask` currently returns the top-matched article's own text, not a generated answer. `LegalQAPredictor._generate()` in `src/prodml/rag.py` is the one method Module 3 replaces with a real vLLM/API call; nothing else changes. |
-| API, logging, tests, Docker | **Real, working, tested** — see "What's verified" below. |
+| Retrieval | **Real, working, benchmarked** — `tfidf`, `bm25`, `hybrid` (default) all run offline; `embedding` (multilingual sentence-transformers) is implemented and unit-tested with an injected encoder but **has not been run against a real model** (no model download in the build environment). |
+| Abstention | **Real, working, tuned on a tiny set** — answers are refused below a confidence threshold (`PRODML_MIN_CONFIDENCE`, default 0.2). Calibrated on 23 bootstrap questions, not validated on held-out data. |
+| Evaluation | **Real, working** — `prodml-eval` (hit@k, recall@k, MRR, abstention rates, threshold sweep, CI gate, optional MLflow). Eval set is a 23-question *bootstrap*; expand it before trusting any number. |
+| Generation | **Extractive placeholder** — `/ask` returns the top-matched article's own text, not a generated answer. `LegalQAPredictor._generate()` in `src/prodml/rag.py` is the one method Module 3 replaces. |
+| API, logging, metrics, tests | **Real, working, tested** — 66 tests, 94% coverage; `/metrics` exposes Prometheus counters/histograms. |
+| CI / data pipeline | `dvc repro` verified locally. GitHub Actions workflow (lint, tests, retrieval-quality gate, Docker build+run+non-root check) is written and YAML-validated but **has not yet run on GitHub**. |
+| Docker | **Not built in the environment this was developed in** (no Docker daemon). The CI `docker` job is the first real verification. |
 
 ## Growing the corpus (the real next task)
 
@@ -64,7 +68,7 @@ applies to the README too, not just the final report.
 ```bash
 pip install -e ".[dev]"                                   # install
 ruff check src tests && black --check src tests           # lint       (passing)
-pytest -v                                                  # test       (34 passed, 91% coverage)
+pytest -v                                                  # test       (66 passed, 94% coverage)
 python -m prodml.corpus                                    # build corpus
 python -m prodml.validate_corpus                           # validate corpus
 uvicorn prodml.api.main:app --reload --port 8000           # serve
@@ -80,13 +84,28 @@ docker exec <container-id> whoami   # should print: appuser
 docker push <your-dockerhub-user>/legal-qa:0.1.0
 ```
 
+## Evaluation and quality gates
+
+```bash
+python -m prodml.evaluation --compare --k 1 --threshold 0.2     # tfidf vs bm25 vs hybrid
+python -m prodml.evaluation --retriever hybrid --sweep          # abstention-threshold curve
+python -m prodml.evaluation --retriever hybrid --k 1 --threshold 0.2 \
+    --check data/eval/thresholds.json                           # exits 1 on regression (CI)
+pip install -e ".[tracking]" && python -m prodml.evaluation --compare --mlflow   # log to MLflow
+dvc repro                                                       # corpus -> validate -> evaluate
+```
+
+Questions live in `data/eval/questions.json` (Arabic + English, paraphrases, and out-of-scope
+questions the service should *refuse*). Results and caveats: `reports/module-2.md`.
+
 ## API
 
 | Endpoint | Method | Behaviour |
 |---|---|---|
 | `/health` | GET | 200 only if the retriever is actually loaded in memory |
 | `/metadata` | GET | model version, articles indexed, generation backend, load timestamp |
-| `/ask` | POST | `{"question": str}` → answer + cited article sources |
+| `/ask` | POST | `{"question": str}` → answer, cited sources, `confidence`, `abstained`, disclaimer |
+| `/metrics` | GET | Prometheus metrics (requests, latency, abstentions, top-score histogram) |
 | `/ask/batch` | POST | `{"questions": [str, ...]}` → list of the same |
 
 Every response carries `correlation_id` (also echoed as the `X-Request-ID` header), and every log
@@ -100,12 +119,17 @@ src/prodml/
 ├── logging_conf.py       # structured JSON logs + correlation-id contextvar
 ├── corpus.py             # Step 0: PDF -> JSON ingestion, Arabic normalization, sample corpus
 ├── validate_corpus.py    # corpus validation, run before anything gets embedded
-├── retriever.py          # TF-IDF baseline retriever (Module 2 swaps in a real embedding model)
+├── retriever.py          # tfidf / bm25 / hybrid / embedding retrievers behind one interface
+├── evaluation.py         # hit@k, MRR, abstention metrics, threshold sweep, CI gate, MLflow
+├── metrics.py            # Prometheus metrics (incl. retrieval-confidence drift signals)
 ├── rag.py                # LegalQAPredictor — the one seam Modules 3-5 build on top of
 └── api/
     ├── main.py            # FastAPI app, lifespan model loading, correlation-id middleware
     └── schemas.py          # Pydantic request/response models
-tests/                    # pytest suite, 91% coverage, fixtures + mocks + parametrization
+data/eval/                # labelled eval questions + CI regression thresholds
+dvc.yaml                  # reproducible pipeline: build -> validate -> evaluate
+.github/workflows/ci.yml  # lint, tests, retrieval gate, Docker verification
+tests/                    # pytest suite, 94% coverage, fixtures + mocks + parametrization
 docker/                   # multi-stage Dockerfile + docker-compose.yml
 reports/
 ├── track-decision.md      # why Track B
