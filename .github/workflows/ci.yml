@@ -1,8 +1,9 @@
-name: CI
+name: CI/CD
 
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
 
 jobs:
@@ -17,36 +18,69 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-      - run: pip install -e ".[dev]"
+      - run: pip install -e ".[dev,tracking,fixtures,pdf]"
       - name: Lint
         run: ruff check src tests && black --check src tests
-      - name: Tests (coverage gate in pyproject)
+      - name: Tests (coverage gate lives in pyproject)
         run: pytest -q
-      - name: Retrieval-quality gate
-        # Fails the PR if hit@1 / MRR / abstention behaviour regress below data/eval/thresholds.json
-        run: python -m prodml.evaluation --compare --retriever hybrid --k 1 --threshold 0.2 --check data/eval/thresholds.json --out reports/eval/latest.json
+      - name: Retrieval-quality gate (hit@1 / MRR / abstention vs data/eval/thresholds.json)
+        run: prodml-eval --compare --retriever hybrid-dense --k 1 --threshold 0.2 --check data/eval/thresholds.json --out reports/eval/latest.json
+      - name: Faithfulness gate (offline proxy; fails the PR below 0.75)
+        # This is the lexical PROXY, not RAGAS. Real RAGAS needs a judge-LLM key: run
+        # `prodml-monitor --ragas --min-faithfulness 0.75` on a schedule with that secret instead.
+        run: prodml-monitor --min-faithfulness 0.75 --out reports/monitoring/latest.json
+      - name: End-to-end smoke test
+        run: prodml-smoke
       - uses: actions/upload-artifact@v4
         if: matrix.python-version == '3.12'
         with:
-          name: eval-report
-          path: reports/eval/latest.json
+          name: reports
+          path: |
+            reports/eval/latest.json
+            reports/monitoring/latest.json
 
   docker:
     runs-on: ubuntu-latest
     needs: test
     steps:
       - uses: actions/checkout@v4
-      - name: Build image
+      - name: Build image (bakes corpus + vector index)
         run: docker build -f docker/Dockerfile -t legal-qa:ci .
-      - name: Run container, check health, non-root user, and a real answer
+      - name: Index is really baked into the image
+        run: docker run --rm legal-qa:ci ls -l /app/data/index/vectors.npz /app/data/index/meta.json
+      - name: Run container, then smoke-test it over HTTP
         run: |
           docker run -d --name qa -p 8000:8000 legal-qa:ci
           for i in $(seq 1 30); do curl -sf localhost:8000/health && break; sleep 1; done
-          curl -sf localhost:8000/health
           test "$(docker exec qa whoami)" = "appuser"
-          curl -sf -X POST localhost:8000/ask -H 'Content-Type: application/json' \
-            -d '{"question":"Must contracts be performed in good faith?"}' | tee /tmp/ask.json
-          grep -q "Article 148" /tmp/ask.json
-          curl -sf localhost:8000/metrics | grep -q prodml_requests_total
-      - name: Image size (for the single- vs multi-stage comparison in the report)
+          pip install -e .
+          prodml-smoke --url http://localhost:8000
+      - name: Image size (single- vs multi-stage comparison for the report)
         run: docker images legal-qa:ci --format '{{.Repository}}:{{.Tag}} {{.Size}}'
+
+  publish:
+    # Pushes to Docker Hub only on main / version tags, and only if the repo has the secrets set:
+    #   Settings -> Secrets and variables -> Actions: DOCKERHUB_USERNAME, DOCKERHUB_TOKEN
+    runs-on: ubuntu-latest
+    needs: docker
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/legal-qa
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=sha
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}

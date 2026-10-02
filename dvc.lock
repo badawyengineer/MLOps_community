@@ -5,27 +5,31 @@ stages:
     deps:
     - path: src/prodml/corpus.py
       hash: md5
-      md5: c8a3397db410bf28bda24c1668904a37
-      size: 11759
+      md5: 71ae4b26ec256fe6c7884acdd895f3d5
+      size: 11579
+    - path: src/prodml/ingest.py
+      hash: md5
+      md5: da8f32d962539d768ad1ed1581678cf8
+      size: 11860
     outs:
     - path: data/processed/articles.json
       hash: md5
-      md5: 756f1624b1edf33ec59832fe3a215c7b
+      md5: aeb3f0a0bbbd3818f6f0ab0cbe42d4a4
       size: 3229
   validate_corpus:
     cmd: python -m prodml.validate_corpus
     deps:
     - path: data/processed/articles.json
       hash: md5
-      md5: 756f1624b1edf33ec59832fe3a215c7b
+      md5: aeb3f0a0bbbd3818f6f0ab0cbe42d4a4
       size: 3229
     - path: src/prodml/validate_corpus.py
       hash: md5
-      md5: 21f46a0244aa9c490722280c9aed6aa8
-      size: 2758
+      md5: 78339068a572be24f1c5a142d1d82833
+      size: 4786
   evaluate:
-    cmd: python -m prodml.evaluation --compare --sweep --retriever hybrid --k 1 
-      --threshold 0.2 --out reports/eval/latest.json --check 
+    cmd: python -m prodml.evaluation --compare --sweep --retriever hybrid-dense 
+      --k 1 --threshold 0.2 --out reports/eval/latest.json --check 
       data/eval/thresholds.json
     deps:
     - path: data/eval/questions.json
@@ -34,26 +38,59 @@ stages:
       size: 5042
     - path: data/eval/thresholds.json
       hash: md5
-      md5: 3b8d32d8d016f4ba7d389abbf56456b0
-      size: 378
+      md5: 180759d9e50533698c3e927ccd06eb86
+      size: 384
     - path: data/processed/articles.json
       hash: md5
-      md5: 756f1624b1edf33ec59832fe3a215c7b
+      md5: aeb3f0a0bbbd3818f6f0ab0cbe42d4a4
       size: 3229
     - path: src/prodml/corpus.py
       hash: md5
-      md5: c8a3397db410bf28bda24c1668904a37
-      size: 11759
+      md5: 71ae4b26ec256fe6c7884acdd895f3d5
+      size: 11579
     - path: src/prodml/evaluation.py
       hash: md5
       md5: 62a3377bb0b6a371d402ad4d95249572
       size: 8002
     - path: src/prodml/retriever.py
       hash: md5
-      md5: 375c3b9e096d81846558197e2ad69cf6
-      size: 10140
+      md5: 805736637012501259ec6ba90e0b467e
+      size: 15764
     outs:
     - path: reports/eval/latest.json
       hash: md5
       md5: 3eba9c1dd0e1c12ba7889d7791fd1b4a
       size: 18092
+  build_index:
+    cmd: python -m prodml.indexing
+    deps:
+    - path: data/processed/articles.json
+      hash: md5
+      md5: aeb3f0a0bbbd3818f6f0ab0cbe42d4a4
+      size: 3229
+    - path: src/prodml/chunking.py
+      hash: md5
+      md5: 0629d1e4fa7ee4da6cd00bb4248c9e87
+      size: 2635
+    - path: src/prodml/embedders.py
+      hash: md5
+      md5: e5c7ab53310a656e8f4d2b4763edbeee
+      size: 3742
+    - path: src/prodml/indexing.py
+      hash: md5
+      md5: 369ddd71d068703bfdfdc0497c5ed39d
+      size: 1193
+    - path: src/prodml/retriever.py
+      hash: md5
+      md5: 805736637012501259ec6ba90e0b467e
+      size: 15764
+    - path: src/prodml/vectorstore.py
+      hash: md5
+      md5: 0373b19fe0ab4e40709cf605c81ab23e
+      size: 1880
+    outs:
+    - path: data/index
+      hash: md5
+      md5: e200bb0b5cf8456375bff2ace66eb1cd.dir
+      size: 3435
+      nfiles: 2
