@@ -1,0 +1,17 @@
+groups:
+  - name: legal-qa
+    rules:
+      # A rising refusal rate means users are asking about things the corpus doesn't cover
+      # (or retrieval degraded). It's the cheapest drift signal this system has.
+      - alert: HighAbstentionRate
+        expr: rate(prodml_abstentions_total[15m]) / clamp_min(sum(rate(prodml_requests_total{path="/ask"}[15m])), 0.001) > 0.3
+        for: 15m
+        labels: {severity: warning}
+        annotations:
+          summary: "More than 30% of questions are being refused for low retrieval confidence"
+      - alert: SlowAsk
+        expr: histogram_quantile(0.95, sum(rate(prodml_request_latency_seconds_bucket{path="/ask"}[5m])) by (le)) > 1
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "p95 /ask latency above 1s"

@@ -1,0 +1,59 @@
+schema: '2.0'
+stages:
+  build_corpus:
+    cmd: python -m prodml.corpus
+    deps:
+    - path: src/prodml/corpus.py
+      hash: md5
+      md5: c8a3397db410bf28bda24c1668904a37
+      size: 11759
+    outs:
+    - path: data/processed/articles.json
+      hash: md5
+      md5: 756f1624b1edf33ec59832fe3a215c7b
+      size: 3229
+  validate_corpus:
+    cmd: python -m prodml.validate_corpus
+    deps:
+    - path: data/processed/articles.json
+      hash: md5
+      md5: 756f1624b1edf33ec59832fe3a215c7b
+      size: 3229
+    - path: src/prodml/validate_corpus.py
+      hash: md5
+      md5: 21f46a0244aa9c490722280c9aed6aa8
+      size: 2758
+  evaluate:
+    cmd: python -m prodml.evaluation --compare --sweep --retriever hybrid --k 1 
+      --threshold 0.2 --out reports/eval/latest.json --check 
+      data/eval/thresholds.json
+    deps:
+    - path: data/eval/questions.json
+      hash: md5
+      md5: f4e095c12f0f95020b303204b60ff5d0
+      size: 5042
+    - path: data/eval/thresholds.json
+      hash: md5
+      md5: 3b8d32d8d016f4ba7d389abbf56456b0
+      size: 378
+    - path: data/processed/articles.json
+      hash: md5
+      md5: 756f1624b1edf33ec59832fe3a215c7b
+      size: 3229
+    - path: src/prodml/corpus.py
+      hash: md5
+      md5: c8a3397db410bf28bda24c1668904a37
+      size: 11759
+    - path: src/prodml/evaluation.py
+      hash: md5
+      md5: 62a3377bb0b6a371d402ad4d95249572
+      size: 8002
+    - path: src/prodml/retriever.py
+      hash: md5
+      md5: 375c3b9e096d81846558197e2ad69cf6
+      size: 10140
+    outs:
+    - path: reports/eval/latest.json
+      hash: md5
+      md5: 3eba9c1dd0e1c12ba7889d7791fd1b4a
+      size: 18092

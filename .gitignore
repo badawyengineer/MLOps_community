@@ -18,3 +18,8 @@ data/processed/*.json
 
 *.pkl
 mlruns/
+
+mlflow.db
+mlruns/
+.venv/
+.dvc/tmp

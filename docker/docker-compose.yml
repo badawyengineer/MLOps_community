@@ -12,3 +12,15 @@ services:
     volumes:
       - ../data/processed:/app/data/processed:ro
     restart: unless-stopped
+
+  # Optional: `docker compose --profile observability up` then open http://localhost:9090
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    profiles: ["observability"]
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/alerts.yml:/etc/prometheus/alerts.yml:ro
+    depends_on:
+      - api

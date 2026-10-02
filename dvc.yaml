@@ -1,0 +1,30 @@
+# Reproducible pipeline: `dvc repro` rebuilds only the stages whose inputs changed.
+# articles.json is cache:false so Git keeps tracking it (small text file). Switch it to a
+# DVC-cached output (and `dvc remote add`) once the full ~1,150-article corpus exists.
+stages:
+  build_corpus:
+    cmd: python -m prodml.corpus
+    deps:
+      - src/prodml/corpus.py
+    outs:
+      - data/processed/articles.json:
+          cache: false
+
+  validate_corpus:
+    cmd: python -m prodml.validate_corpus
+    deps:
+      - src/prodml/validate_corpus.py
+      - data/processed/articles.json
+
+  evaluate:
+    cmd: python -m prodml.evaluation --compare --sweep --retriever hybrid --k 1 --threshold 0.2 --out reports/eval/latest.json --check data/eval/thresholds.json
+    deps:
+      - src/prodml/retriever.py
+      - src/prodml/evaluation.py
+      - src/prodml/corpus.py
+      - data/processed/articles.json
+      - data/eval/questions.json
+      - data/eval/thresholds.json
+    outs:
+      - reports/eval/latest.json:
+          cache: false

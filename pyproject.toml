@@ -10,6 +10,7 @@ dependencies = [
     "pydantic-settings>=2.2",
     "scikit-learn>=1.4",
     "numpy>=1.26",
+    "prometheus-client>=0.20",
 ]
 
 [project.optional-dependencies]
@@ -21,12 +22,20 @@ dev = [
     "black>=24.0",
     "pre-commit>=3.7",
 ]
+embeddings = [
+    "sentence-transformers>=3.0",
+]
+tracking = [
+    "mlflow>=2.12",
+    "dvc>=3.50",
+]
 pdf = [
     "pdfplumber>=0.11",
 ]
 
 [project.scripts]
 prodml-build-corpus = "prodml.corpus:main"
+prodml-eval = "prodml.evaluation:main"
 
 [build-system]
 requires = ["setuptools>=68"]
