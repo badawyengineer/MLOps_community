@@ -74,11 +74,35 @@ def push(report: dict[str, Any], gateway: str, job: str = "prodml-eval") -> Coll
     return reg
 
 
+def log_mlflow(report: dict[str, Any]) -> None:
+    """One MLflow run per monitoring pass -> the faithfulness trend across sessions is a chart."""
+    import os
+
+    import mlflow
+
+    if not os.environ.get("MLFLOW_TRACKING_URI"):
+        mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_experiment("legal-qa-monitoring")
+    with mlflow.start_run(run_name=f"monitor-{report['source']}"):
+        mlflow.log_param("scorer", report["source"])
+        mlflow.log_metrics(
+            {
+                "faithfulness": report["faithfulness"],
+                "false_abstain_rate": report["false_abstain_rate"],
+                "n_answered": report["n_answered"],
+            }
+        )
+        mlflow.log_metrics({f"ragas_{k}": v for k, v in (report.get("ragas") or {}).items()})
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     ap.add_argument("--eval-set", type=Path, default=Path("data/eval/questions.json"))
     ap.add_argument("--push", metavar="GATEWAY_URL")
     ap.add_argument("--ragas", action="store_true")
+    ap.add_argument(
+        "--mlflow", action="store_true", help="log this pass to MLflow (trend over time)"
+    )
     ap.add_argument("--out", type=Path, default=Path("reports/monitoring/latest.json"))
     ap.add_argument("--min-faithfulness", type=float, help="exit 1 below this (CI/cron gate)")
     args = ap.parse_args(argv)
@@ -87,6 +111,8 @@ def main(argv: list[str] | None = None) -> int:
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps(report, indent=2))
+    if args.mlflow:
+        log_mlflow(report)
     if args.push:
         push(report, args.push)
         print(f"pushed to {args.push}")

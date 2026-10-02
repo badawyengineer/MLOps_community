@@ -1,0 +1,14 @@
+# Where alerts go. Default: a generic webhook (e.g. a Slack-compatible incoming-webhook URL).
+# CHANGE THE URL, or swap this receiver for email_configs / slack_configs, then verify with:
+#   curl -X POST localhost:9093/api/v2/alerts -H 'Content-Type: application/json' \
+#     -d '[{"labels":{"alertname":"FaithfulnessLow","severity":"critical"}}]'
+route:
+  receiver: team
+  group_by: [alertname]
+  group_wait: 10s
+  repeat_interval: 4h
+receivers:
+  - name: team
+    webhook_configs:
+      - url: "http://host.docker.internal:5001/alerts"   # <- replace with your Slack/Teams/webhook endpoint
+        send_resolved: true

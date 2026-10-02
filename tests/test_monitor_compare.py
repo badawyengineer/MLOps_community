@@ -77,3 +77,27 @@ def test_compare_within_budget_for_identical_models(predictor) -> None:
     a = cmp.run_endpoint(_client("Contracts bind the parties [Article 147]."), predictor, items)
     b = cmp.run_endpoint(_client("Contracts bind the parties [Article 147]."), predictor, items)
     assert "within" in cmp.render_table(a, b, "a", "b")
+
+
+def test_monitor_logs_each_pass_to_mlflow(tmp_path, monkeypatch) -> None:
+    pytest.importorskip("mlflow")
+    import mlflow
+
+    monkeypatch.setenv("MLFLOW_TRACKING_URI", f"sqlite:///{tmp_path}/m.db")
+    for _ in range(2):  # two passes = a (tiny) trend
+        assert monitor.main(["--mlflow", "--out", str(tmp_path / "r.json")]) == 0
+    runs = mlflow.search_runs(experiment_names=["legal-qa-monitoring"])
+    assert (
+        len(runs) == 2
+        and (runs["metrics.faithfulness"] > 0.9).all()
+        and (runs["params.scorer"] == "proxy").all()
+    )
+
+
+def test_experiment_chart_is_written(tmp_path) -> None:
+    pytest.importorskip("matplotlib")
+    from prodml import experiments as ex
+
+    out = tmp_path / "chart.png"
+    ex.plot_runs(ex.run_grid(["hashing-256"]), out)
+    assert out.stat().st_size > 5000

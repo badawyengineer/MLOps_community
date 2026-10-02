@@ -29,6 +29,12 @@ services:
       - ./observability/alerts.yml:/etc/prometheus/alerts.yml:ro
     depends_on: [api, pushgateway]
 
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    profiles: ["observability"]
+    ports: ["9093:9093"]
+    volumes: ["./observability/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro"]
+
   pushgateway:
     image: prom/pushgateway:v1.9.0
     profiles: ["observability"]

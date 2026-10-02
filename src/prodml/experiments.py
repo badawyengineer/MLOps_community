@@ -134,11 +134,43 @@ def _write_sample(tmp: Path) -> Path:
     return p
 
 
+def plot_runs(results: list[dict[str, Any]], out: Path) -> None:
+    """Bar chart of all runs (generated from the same numbers logged to MLflow; it is not a
+    screenshot of the MLflow UI - take that yourself for the handbook's /reports/ requirement)."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    labels = [
+        f"{r['params']['embedding_model']}\nc{r['params']['chunk_size']}/o{r['params']['overlap']}"
+        for r in results
+    ]
+    fig, ax = plt.subplots(figsize=(max(8, len(results) * 0.9), 4.5))
+    xs = range(len(results))
+    ax.bar([x - 0.2 for x in xs], [r["metrics"]["mrr"] for r in results], 0.4, label="MRR")
+    ax.bar(
+        [x + 0.2 for x in xs],
+        [quality(r) for r in results],
+        0.4,
+        label="quality (MRR + abstention)",
+    )
+    ax.set_xticks(list(xs), labels, fontsize=7)
+    ax.set_ylim(0, 1)
+    ax.legend()
+    ax.set_title("Chunking x embedding experiments (offline embeddings, bootstrap eval set)")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(out, dpi=140)
+    plt.close(fig)
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     ap.add_argument("--models", nargs="+", default=["hashing-512", "hashing-1024", "lsa-32"])
     ap.add_argument("--k", type=int, default=1)
     ap.add_argument("--no-mlflow", action="store_true")
+    ap.add_argument("--plot", type=Path, help="also write a comparison chart PNG here")
     ap.add_argument("--ragas-json", type=Path, help="real RAGAS scores to attach to the best run")
     args = ap.parse_args(argv)
 
@@ -152,6 +184,8 @@ def main(argv: list[str] | None = None) -> int:
             f"{p['embedding_model']:<14}{p['chunk_size']:>6}{p['overlap']:>5}{p['n_chunks']:>7}"
             f"{m['hit_at_k']:>7.2f}{m['mrr']:>6.2f}{m['correct_abstain_rate']:>10.2f}{p['threshold']:>6.2f}{quality(r):>7.2f}"
         )
+    if args.plot:
+        plot_runs(results, args.plot)
     b = best_of(results)["params"]
     print(f"\nbest: {b['embedding_model']} chunk={b['chunk_size']} overlap={b['overlap']}")
     if not args.no_mlflow:
