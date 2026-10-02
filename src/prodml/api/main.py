@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import json
 import logging
 import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 
 from prodml import metrics
 from prodml.api.schemas import (
@@ -106,7 +107,7 @@ async def metadata() -> MetadataResponse:
 
 
 @app.post("/ask", response_model=AskResponse)
-async def ask(payload: AskRequest) -> AskResponse:
+def ask(payload: AskRequest) -> AskResponse:
     start = time.perf_counter()
     result = predictor.query_one(payload.question)
     metrics.observe_answer(result)
@@ -119,8 +120,24 @@ async def ask(payload: AskRequest) -> AskResponse:
     )
 
 
+@app.post("/ask/stream")
+def ask_stream(payload: AskRequest) -> StreamingResponse:
+    """Server-sent events: tokens appear progressively (``curl -N``). See
+    ``LegalQAPredictor.stream_events`` for the event types."""
+
+    def events():
+        for event in predictor.stream_events(payload.question):
+            if event["type"] == "done":
+                metrics.observe_answer(event)
+            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(
+        events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"}
+    )
+
+
 @app.post("/ask/batch", response_model=AskBatchResponse)
-async def ask_batch(payload: AskBatchRequest) -> AskBatchResponse:
+def ask_batch(payload: AskBatchRequest) -> AskBatchResponse:
     start = time.perf_counter()
     raw_results = predictor.query_batch(payload.questions)
     for r in raw_results:

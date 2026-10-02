@@ -392,6 +392,13 @@ class DenseHybridRetriever:
         self.bm25.fit(articles)
         return self
 
+    def load(self, directory, articles: list[Article]) -> DenseHybridRetriever:
+        """Load the persisted dense index (raises ValueError if stale); BM25 is rebuilt in-memory."""
+        self.dense.load(directory, articles)
+        self.bm25.fit(articles)
+        self._articles = articles
+        return self
+
     def query(self, question: str, top_k: int = 3) -> list[ScoredArticle]:
         n = len(self._articles)
         by_id: dict[int, float] = {}

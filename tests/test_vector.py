@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from itertools import pairwise
+
 import numpy as np
 import pytest
 
@@ -41,7 +43,7 @@ def test_overlap_repeats_trailing_sentence_into_next_chunk() -> None:
     a = _long_article()
     plain, over = chunk_article(a, 150, 0), chunk_article(a, 150, 60)
     assert len(over) > len(plain)  # overlap means more, partly redundant chunks
-    for prev, nxt in zip(over[1:-1], over[2:], strict=True):
+    for prev, nxt in pairwise(over[1:]):
         last_sentence = prev.text.split(". ")[-1]
         assert nxt.text.startswith(last_sentence.strip())
     # without overlap, no sentence is repeated across chunks
