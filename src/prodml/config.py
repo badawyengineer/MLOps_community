@@ -21,6 +21,10 @@ class Settings(BaseSettings):
 
     # --- retrieval ---
     top_k: int = 3
+    embedding_model: str = "hashing"  # "hashing" | "lsa" | "<org>/<sentence-transformers model>"
+    chunk_chars: int = 0  # 0 = one chunk per article (the default, and what citations want)
+    chunk_overlap: int = 0
+    index_dir: Path = Path("data/index")
     retriever: str = "hybrid"  # "tfidf" | "bm25" | "hybrid" | "embedding"
     min_confidence: float = 0.2  # abstain when the top score is below this (calibrate via eval)
     max_context_chars: int = 4000

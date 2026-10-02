@@ -28,7 +28,10 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+from prodml.chunking import chunk_corpus, chunk_index_texts
 from prodml.corpus import Article, normalize_for_search
+from prodml.embedders import Embedder, build_embedder
+from prodml.vectorstore import VectorStore
 
 
 @dataclass
@@ -286,16 +289,140 @@ class EmbeddingRetriever:
         return _top_k(self._articles, np.clip(self._matrix @ q, 0.0, 1.0), top_k)
 
 
+def corpus_fingerprint(articles: list[Article]) -> str:
+    import hashlib
+    import json
+
+    blob = json.dumps(articles, sort_keys=True, ensure_ascii=False).encode()
+    return hashlib.sha256(blob).hexdigest()[:16]
+
+
+class VectorRetriever:
+    """Chunk by article -> embed -> vector store -> cosine search, aggregated to ARTICLES
+    (an article's score is its best chunk's score, so results always cite article numbers)."""
+
+    def __init__(
+        self, embedder: Embedder | None = None, chunk_chars: int = 0, overlap: int = 0
+    ) -> None:
+        self.embedder = embedder or build_embedder("hashing")
+        self.chunk_chars, self.overlap = chunk_chars, overlap
+        self._articles: list[Article] = []
+        self._by_number: dict[int, Article] = {}
+        self.store: VectorStore | None = None
+
+    def fit(self, articles: list[Article]) -> VectorRetriever:
+        self._set_articles(articles)
+        chunks = chunk_corpus(articles, self.chunk_chars, self.overlap)
+        texts = chunk_index_texts(chunks)
+        self.embedder.fit(texts)
+        payloads = [{"chunk_id": c.chunk_id, "article_number": c.article_number} for c in chunks]
+        self.store = VectorStore(
+            self.embedder.encode(texts), payloads, self._meta(articles, len(chunks))
+        )
+        return self
+
+    def _set_articles(self, articles: list[Article]) -> None:
+        self._articles = articles
+        self._by_number = {a["article_number"]: a for a in articles}
+
+    def _meta(self, articles: list[Article], n_chunks: int) -> dict:
+        return {
+            "embedding_model": self.embedder.name,
+            "chunk_chars": self.chunk_chars,
+            "overlap": self.overlap,
+            "n_articles": len(articles),
+            "n_chunks": n_chunks,
+            "corpus_fingerprint": corpus_fingerprint(articles),
+        }
+
+    def save(self, directory) -> None:
+        if not self.embedder.stateless:
+            raise ValueError(
+                f"{self.embedder.name} is fitted per corpus and cannot be persisted; use a stateless embedder"
+            )
+        assert self.store is not None
+        self.store.save(directory)
+
+    def load(self, directory, articles: list[Article]) -> VectorRetriever:
+        """Load a persisted index; raises ValueError if it is stale (different corpus/config)."""
+        from pathlib import Path
+
+        store = VectorStore.load(Path(directory))
+        expect = self._meta(articles, store.meta.get("n_chunks", -1))
+        if store.meta != expect:
+            raise ValueError(f"index at {directory} is stale or built with a different config")
+        self._set_articles(articles)
+        self.store = store
+        return self
+
+    def query(self, question: str, top_k: int = 3) -> list[ScoredArticle]:
+        if self.store is None:
+            raise RuntimeError("VectorRetriever.fit() or load() must be called before query().")
+        q = self.embedder.encode([normalize_for_search(question)])[0]
+        best: dict[int, float] = {}
+        for payload, score in self.store.search(q, k=max(top_k * 5, 20)):
+            n = payload["article_number"]
+            best[n] = max(best.get(n, 0.0), score)
+        ranked = sorted(best.items(), key=lambda kv: kv[1], reverse=True)[:top_k]
+        return [
+            ScoredArticle(self._by_number[n], float(np.clip(sc, 0.0, 1.0)))
+            for n, sc in ranked
+            if sc > 0
+        ]
+
+
+class DenseHybridRetriever:
+    """Dense vector retrieval blended with BM25 (lexical). ``alpha`` weights the dense side."""
+
+    def __init__(
+        self,
+        embedder: Embedder | None = None,
+        chunk_chars: int = 0,
+        overlap: int = 0,
+        alpha: float = 0.5,
+    ):
+        self.alpha = alpha
+        self.dense = VectorRetriever(embedder, chunk_chars, overlap)
+        self.bm25 = Bm25Retriever()
+        self._articles: list[Article] = []
+
+    def fit(self, articles: list[Article]) -> DenseHybridRetriever:
+        self._articles = articles
+        self.dense.fit(articles)
+        self.bm25.fit(articles)
+        return self
+
+    def query(self, question: str, top_k: int = 3) -> list[ScoredArticle]:
+        n = len(self._articles)
+        by_id: dict[int, float] = {}
+        for weight, retr in ((self.alpha, self.dense), (1 - self.alpha, self.bm25)):
+            for m in retr.query(question, top_k=n):
+                key = m.article["article_number"]
+                by_id[key] = by_id.get(key, 0.0) + weight * m.score
+        lookup = {a["article_number"]: a for a in self._articles}
+        ranked = sorted(by_id.items(), key=lambda kv: kv[1], reverse=True)[:top_k]
+        return [ScoredArticle(lookup[k], s) for k, s in ranked if s > 0]
+
+
 RETRIEVERS: dict[str, Callable[[], Retriever]] = {
     "tfidf": TfidfRetriever,
     "bm25": Bm25Retriever,
     "hybrid": HybridRetriever,
     "embedding": EmbeddingRetriever,
+    "vector": VectorRetriever,
+    "hybrid-dense": DenseHybridRetriever,
 }
 
 
 def build_retriever(name: str) -> Retriever:
-    try:
-        return RETRIEVERS[name]()
-    except KeyError:
-        raise ValueError(f"Unknown retriever {name!r}; choose from {sorted(RETRIEVERS)}") from None
+    """Build by name. The dense retrievers read embedding_model / chunk_chars / chunk_overlap
+    from settings (PRODML_EMBEDDING_MODEL, PRODML_CHUNK_CHARS, PRODML_CHUNK_OVERLAP)."""
+    from prodml.config import settings
+
+    if name not in RETRIEVERS:
+        raise ValueError(f"Unknown retriever {name!r}; choose from {sorted(RETRIEVERS)}")
+    if name in ("vector", "hybrid-dense"):
+        return RETRIEVERS[name](
+            build_embedder(settings.embedding_model), settings.chunk_chars, settings.chunk_overlap
+        )
+    return RETRIEVERS[name]()
