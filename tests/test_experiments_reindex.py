@@ -47,6 +47,7 @@ def test_mlflow_logging_and_registry_roundtrip(tmp_path, monkeypatch) -> None:
     import pandas as pd
 
     monkeypatch.setenv("MLFLOW_TRACKING_URI", f"sqlite:///{tmp_path}/m.db")
+    monkeypatch.setenv("PRODML_MLFLOW_ARTIFACTS", str(tmp_path / "artifacts"))
     monkeypatch.setattr(
         settings, "corpus_path", tmp_path / "missing.json"
     )  # forces sample-corpus artifact
