@@ -31,3 +31,9 @@
 - Guardrails: PII redaction, hallucinated-citation check. Langfuse tracing over REST.
 - Query-embedding drift. `prodml-monitor` -> Pushgateway + MLflow. Grafana dashboard, alert rules, Alertmanager.
 - Architecture diagram; one-command smoke test.
+
+## Fixes found by clean-room verification
+- `data/processed/articles.json` was gitignored since Module 1, so it was never committed and a fresh clone (or `COPY data/processed/` in Docker) had no corpus. Now tracked; regression test added.
+- `prodml-index` silently fell back to the 5-article sample when the corpus was missing, which masked the above. It now errors unless `--allow-sample`.
+- Load test: a locustfile bug (missing `catch_response=True`) crashed the stream task while stats showed 0 failures; fixed and re-run.
+- Experiment ranking on MRR alone crowned a model that could never abstain; now ranks on retrieval + abstention quality.

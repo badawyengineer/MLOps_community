@@ -16,7 +16,7 @@ Every "done" is backed by a test, a command you can run, or a file in this repo.
 | ✅ done | FastAPI /ask {question} -> {answer, sources[]}, sources are article citations | tests/test_api.py; sources look like `Egyptian Civil Code, Article 148` |
 | ✅ done | Pydantic rejects an empty question: 422, tested | tests/test_api.py::test_ask_rejects_empty_question |
 | ✅ done | /health returns {status: healthy, documents_indexed: N} | tested; returns 503 until the index is loaded |
-| ⚠️ partial | Dockerfile includes vector store + embedded docs; compose up on :8000 | Written (index built at image build). NEVER BUILT - no Docker daemon here. The CI `docker` job is its first real test |
+| ⚠️ partial | Dockerfile includes vector store + embedded docs; compose up on :8000 | Written (index built at image build). `docker build` itself NEVER RAN (no daemon here), but every Dockerfile step was replayed from a fresh clone with a non-editable install: that caught and fixed a real bug (the corpus JSON was gitignored, so `COPY data/processed/` would have failed). The CI `docker` job is the first true test |
 | ✅ done | README: 3 commands to run Q&A on any machine | README quick start |
 | ⚠️ partial | MLflow logs chunk_size, overlap, embedding_model, faithfulness | Logged, but the faithfulness metric is the lexical PROXY (`faithfulness_proxy`), not RAGAS |
 | ⚠️ partial | >=5 runs compared; MLflow screenshot in /reports/ | 12 runs logged + a chart generated from them (reports/mlflow_runs_comparison.png). The chart is NOT a UI screenshot: take one yourself |

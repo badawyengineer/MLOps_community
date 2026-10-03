@@ -23,7 +23,7 @@ pip install -e ".[dev,tracking,fixtures,pdf]"
 prodml-smoke                       # 12 PASS/FAIL checks in ~2 s: every endpoint, abstention, streaming,
                                    # metrics, guardrails, corpus validation, retrieval-quality gate
 prodml-smoke --url http://localhost:8000     # same checks against a running server / the Docker container
-pytest                             # 151 tests, 91% coverage
+pytest                             # 153 tests, 91% coverage
 ```
 
 ## What's in it
@@ -82,6 +82,6 @@ src/prodml/      ingest, corpus, chunking, embedders, vectorstore, retriever, ra
                  faithfulness, tracing, drift, metrics, evaluation, experiments, monitor, reindex, smoke, bento_service, api/
 data/eval/       labelled questions + CI regression thresholds        loadtest/   locustfile
 docker/          Dockerfile, compose, Prometheus/Grafana/Alertmanager, canary    docs/   architecture, monitoring, gpu-runbook
-reports/         final-checklist, module reports, load test, eval results         tests/  151 tests + synthetic PDF fixture
+reports/         final-checklist, module reports, load test, eval results         tests/  153 tests + synthetic PDF fixture
 ```
 *Informational retrieval over statute text only; not legal advice.*
