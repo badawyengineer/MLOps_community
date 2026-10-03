@@ -1,0 +1,221 @@
+{
+ "_note": "BOOTSTRAP eval set (23 items) written against the 5-article sample corpus. 'answerable' is relative to the Civil Code; out-of-scope items stay unanswerable even after the full corpus is ingested. EXPAND to 50-100 items by hand against the real corpus before trusting any number from it.",
+ "items": [
+  {
+   "id": "a1-1",
+   "question": "بماذا يحكم القاضي إذا لم يوجد نص تشريعي؟",
+   "lang": "ar",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    1
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a1-2",
+   "question": "ما هو ترتيب مصادر القانون عند غياب النص؟",
+   "lang": "ar",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    1
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a1-3",
+   "question": "هل يطبق القاضي العرف عند عدم وجود نص؟",
+   "lang": "ar",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    1
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a1-4",
+   "question": "What does a judge rely on when no legislation applies?",
+   "lang": "en",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    1
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a147-1",
+   "question": "هل يمكن لأحد الطرفين تعديل العقد منفردا؟",
+   "lang": "ar",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    147
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a147-2",
+   "question": "متى يجوز نقض العقد؟",
+   "lang": "ar",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    147
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a147-3",
+   "question": "ما معنى أن العقد شريعة المتعاقدين؟",
+   "lang": "ar",
+   "kind": "near-verbatim",
+   "relevant_articles": [
+    147
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a147-4",
+   "question": "Can a contract be changed without both parties agreeing?",
+   "lang": "en",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    147
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a148-1",
+   "question": "هل يجب تنفيذ العقد بحسن نية؟",
+   "lang": "ar",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    148
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a148-2",
+   "question": "كيف يجب تنفيذ العقد؟",
+   "lang": "ar",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    148
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a148-3",
+   "question": "ما التزام المتعاقد عند تنفيذ العقد وفقا لمقتضيات حسن النية؟",
+   "lang": "ar",
+   "kind": "near-verbatim",
+   "relevant_articles": [
+    148
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a148-4",
+   "question": "Must contracts be performed in good faith?",
+   "lang": "en",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    148
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a163-1",
+   "question": "من المسؤول عن تعويض الضرر الذي يلحق بالغير؟",
+   "lang": "ar",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    163
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a163-2",
+   "question": "ما حكم الخطأ الذي يسبب ضررا للغير؟",
+   "lang": "ar",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    163
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a163-3",
+   "question": "هل يلتزم من أحدث ضررا بالتعويض؟",
+   "lang": "ar",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    163
+   ],
+   "answerable": true
+  },
+  {
+   "id": "a163-4",
+   "question": "Who must pay compensation for damage caused by a fault?",
+   "lang": "en",
+   "kind": "paraphrase",
+   "relevant_articles": [
+    163
+   ],
+   "answerable": true
+  },
+  {
+   "id": "x-1",
+   "question": "ما عقوبة السرقة؟",
+   "lang": "ar",
+   "kind": "out-of-scope (Penal Code)",
+   "relevant_articles": [],
+   "answerable": false
+  },
+  {
+   "id": "x-2",
+   "question": "كيف أحسب ضريبة الدخل على راتبي؟",
+   "lang": "ar",
+   "kind": "out-of-scope (tax law)",
+   "relevant_articles": [],
+   "answerable": false
+  },
+  {
+   "id": "x-3",
+   "question": "ما شروط عقد الزواج وإجراءاته؟",
+   "lang": "ar",
+   "kind": "out-of-scope (personal status law)",
+   "relevant_articles": [],
+   "answerable": false
+  },
+  {
+   "id": "x-4",
+   "question": "كيف أسجل شركة مساهمة جديدة؟",
+   "lang": "ar",
+   "kind": "out-of-scope (company law)",
+   "relevant_articles": [],
+   "answerable": false
+  },
+  {
+   "id": "x-5",
+   "question": "ما هي عاصمة فرنسا؟",
+   "lang": "ar",
+   "kind": "off-topic",
+   "relevant_articles": [],
+   "answerable": false
+  },
+  {
+   "id": "x-6",
+   "question": "What is the penalty for drunk driving?",
+   "lang": "en",
+   "kind": "out-of-scope (traffic law)",
+   "relevant_articles": [],
+   "answerable": false
+  },
+  {
+   "id": "x-7",
+   "question": "كيف أطبخ الكشري؟",
+   "lang": "ar",
+   "kind": "off-topic",
+   "relevant_articles": [],
+   "answerable": false
+  }
+ ]
+}

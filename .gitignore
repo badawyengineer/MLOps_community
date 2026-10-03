@@ -13,8 +13,13 @@ htmlcov/
 # raw source PDFs and any bulk-derived corpus stay out of git history —
 # tracked with DVC from Module 2 onward instead.
 data/raw/*.pdf
-data/processed/*.json
-!data/processed/.gitkeep
+# data/processed/articles.json is COMMITTED on purpose (small text file; the handbook requires it in the repo)
 
 *.pkl
 mlruns/
+
+mlflow.db
+mlruns/
+.venv/
+.dvc/tmp
+data/index

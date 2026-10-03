@@ -7,7 +7,12 @@ __pycache__
 tests/
 notebooks/
 data/raw/
+data/index/
+reports/
+loadtest/
 *.md
 !README.md
 mlruns/
+mlflow.db
 .env
+.dvc/tmp

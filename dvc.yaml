@@ -1,0 +1,49 @@
+# Reproducible pipeline: `dvc repro` rebuilds only the stages whose inputs changed.
+#
+# TO USE THE REAL CORPUS (handbook: the PDF and JSON must be DVC-tracked):
+#   1. put the PDF at data/raw/egyptian_civil_code.pdf
+#   2. dvc add data/raw/egyptian_civil_code.pdf            (tracks the PDF, git-ignores it)
+#   3. python -m prodml.ingest --dump 3                    (READ the columns before trusting them)
+#   4. in `build_corpus` below: swap `cmd` for the `prodml-ingest` line and add the PDF to `deps`
+#   5. dvc remote add -d storage <s3-or-gdrive-or-local-path> && dvc push
+# After that, anyone can `git clone && dvc pull && dvc repro` and get the identical corpus + index.
+stages:
+  build_corpus:
+    cmd: python -m prodml.corpus            # -> swap for: python -m prodml.ingest   (see above)
+    deps:
+      - src/prodml/corpus.py
+      - src/prodml/ingest.py
+    outs:
+      - data/processed/articles.json:
+          cache: false                      # small text file: keep it in Git too
+
+  validate_corpus:
+    cmd: python -m prodml.validate_corpus   # add --strict once the full corpus is ingested
+    deps:
+      - src/prodml/validate_corpus.py
+      - data/processed/articles.json
+
+  build_index:
+    cmd: python -m prodml.indexing
+    deps:
+      - src/prodml/indexing.py
+      - src/prodml/retriever.py
+      - src/prodml/chunking.py
+      - src/prodml/embedders.py
+      - src/prodml/vectorstore.py
+      - data/processed/articles.json
+    outs:
+      - data/index                          # binary vectors: DVC-cached, not in Git
+
+  evaluate:
+    cmd: python -m prodml.evaluation --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.2 --out reports/eval/latest.json --check data/eval/thresholds.json
+    deps:
+      - src/prodml/retriever.py
+      - src/prodml/evaluation.py
+      - src/prodml/corpus.py
+      - data/processed/articles.json
+      - data/eval/questions.json
+      - data/eval/thresholds.json
+    outs:
+      - reports/eval/latest.json:
+          cache: false

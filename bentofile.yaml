@@ -1,0 +1,16 @@
+# `bentoml build` packages the service; `bentoml containerize legal_qa:latest` makes a Docker image.
+service: "prodml.bento_service:LegalQAService"
+labels:
+  owner: badawyengineer
+  project: legal-qa
+include:
+  - "pyproject.toml"
+  - "README.md"
+  - "src/prodml/**/*.py"
+  - "data/processed/articles.json"
+  - "data/eval/questions.json"
+python:
+  lock_packages: false   # the project itself is installed from the bundled pyproject, not from PyPI
+  packages:
+    - "."             # installs prodml + all its declared dependencies inside the image
+    - "bentoml>=1.4"

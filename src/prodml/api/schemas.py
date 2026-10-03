@@ -24,6 +24,13 @@ class AskResponse(BaseModel):
     answer: str
     sources: list[str]
     scores: list[float]
+    abstained: bool = False
+    confidence: float = 0.0
+    disclaimer: str = ""
+    generation_backend: str = "extractive"
+    guardrail_flags: list[str] = []
+    faithfulness_proxy: float | None = None
+    trace_id: str = ""
     model_version: str
     correlation_id: str
     latency_ms: float
@@ -42,4 +49,6 @@ class MetadataResponse(BaseModel):
     model_version: str
     articles_indexed: int
     generation_backend: str
+    retriever: str = "tfidf"
+    min_confidence: float = 0.0
     loaded_at: float | None

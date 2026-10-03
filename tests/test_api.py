@@ -64,3 +64,58 @@ def test_ask_batch_happy_path(client: TestClient) -> None:
 def test_ask_batch_rejects_empty_list(client: TestClient) -> None:
     response = client.post("/ask/batch", json={"questions": []})
     assert response.status_code == 422
+
+
+def test_ask_exposes_confidence_and_abstention(client: TestClient) -> None:
+    body = client.post("/ask", json={"question": "What is the penalty for drunk driving?"}).json()
+    assert body["abstained"] is True and body["sources"] == []
+    ok = client.post("/ask", json={"question": "Must contracts be performed in good faith?"}).json()
+    assert ok["abstained"] is False and ok["confidence"] > 0
+
+
+def test_metrics_endpoint_reports_abstentions_and_requests(client: TestClient) -> None:
+    client.post("/ask", json={"question": "كيف أطبخ الكشري؟"})
+    text = client.get("/metrics").text
+    assert "prodml_abstentions_total" in text
+    assert 'prodml_requests_total{path="/ask",status="200"}' in text
+    assert "prodml_top_score_bucket" in text
+
+
+def test_metadata_reports_retriever_and_threshold(client: TestClient) -> None:
+    meta = client.get("/metadata").json()
+    assert meta["retriever"] == "hybrid-dense" and meta["min_confidence"] == 0.2
+
+
+def test_ask_response_has_generation_and_guardrail_fields(client: TestClient) -> None:
+    body = client.post(
+        "/ask", json={"question": "Must contracts be performed in good faith?"}
+    ).json()
+    assert body["generation_backend"] == "extractive"
+    assert body["guardrail_flags"] == [] and 0 <= body["faithfulness_proxy"] <= 1
+    assert len(body["trace_id"]) == 32
+
+
+def test_ask_stream_is_sse_with_meta_tokens_done(client: TestClient) -> None:
+    import json as _json
+
+    r = client.post("/ask/stream", json={"question": "Must contracts be performed in good faith?"})
+    assert r.status_code == 200 and r.headers["content-type"].startswith("text/event-stream")
+    events = [_json.loads(line[6:]) for line in r.text.splitlines() if line.startswith("data: ")]
+    assert events[0]["type"] == "meta" and events[-1]["type"] == "done"
+    assert sum(e["type"] == "token" for e in events) > 3  # progressive, not one blob
+    assert events[-1]["sources"][0] == "Egyptian Civil Code, Article 148"
+
+
+def test_ask_stream_validates_input(client: TestClient) -> None:
+    assert client.post("/ask/stream", json={"question": "x"}).status_code == 422
+
+
+def test_metrics_expose_new_monitoring_series(client: TestClient) -> None:
+    client.post("/ask", json={"question": "Must contracts be performed in good faith?"})
+    text = client.get("/metrics").text
+    for series in (
+        "prodml_faithfulness_proxy_bucket",
+        "prodml_query_centroid_cosine_bucket",
+        "prodml_query_drift_drop",
+    ):
+        assert series in text

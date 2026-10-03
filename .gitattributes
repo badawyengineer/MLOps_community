@@ -1,0 +1,5 @@
+# Consistent line endings on every OS (Windows autocrlf would otherwise change file hashes, e.g. for DVC)
+* text=auto eol=lf
+*.pdf binary
+*.npz binary
+*.png binary

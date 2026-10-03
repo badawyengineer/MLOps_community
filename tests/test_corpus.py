@@ -59,18 +59,18 @@ def test_validate_corpus_passes_on_sample_corpus() -> None:
 
 def test_validate_corpus_flags_empty_text_when_not_repealed() -> None:
     articles = copy.deepcopy(sample_corpus())
-    articles[0]["ar_text"] = ""
+    articles[0]["text_ar"] = ""
     articles[0]["is_repealed"] = False
 
     result = validate_corpus(articles)
 
     assert not result.ok
-    assert any("empty ar_text" in e for e in result.errors)
+    assert any("empty text_ar" in e for e in result.errors)
 
 
 def test_validate_corpus_allows_empty_text_when_repealed() -> None:
     articles = copy.deepcopy(sample_corpus())
-    articles[0]["ar_text"] = ""
+    articles[0]["text_ar"] = ""
     articles[0]["is_repealed"] = True
 
     result = validate_corpus(articles)

@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+import json
 import logging
 import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 
+from prodml import metrics
 from prodml.api.schemas import (
     AskBatchRequest,
     AskBatchResponse,
@@ -55,6 +57,11 @@ async def correlation_id_middleware(request: Request, call_next):
     logger.info(
         "path=%s status=%s latency_ms=%.2f", request.url.path, response.status_code, elapsed_ms
     )
+    # Use the matched route template (not the raw URL) so label cardinality stays bounded.
+    route = request.scope.get("route")
+    path_label = getattr(route, "path", "unmatched")
+    metrics.REQUESTS.labels(path_label, str(response.status_code)).inc()
+    metrics.LATENCY.labels(path_label).observe(elapsed_ms / 1000)
     return response
 
 
@@ -89,15 +96,21 @@ async def health() -> HealthResponse:
     )
 
 
+@app.get("/metrics", include_in_schema=False)
+async def prometheus_metrics() -> Response:
+    return Response(content=metrics.render(), media_type=metrics.CONTENT_TYPE_LATEST)
+
+
 @app.get("/metadata", response_model=MetadataResponse)
 async def metadata() -> MetadataResponse:
     return MetadataResponse(**predictor.metadata())
 
 
 @app.post("/ask", response_model=AskResponse)
-async def ask(payload: AskRequest) -> AskResponse:
+def ask(payload: AskRequest) -> AskResponse:
     start = time.perf_counter()
     result = predictor.query_one(payload.question)
+    metrics.observe_answer(result)
     latency_ms = (time.perf_counter() - start) * 1000
     return AskResponse(
         **result,
@@ -107,10 +120,28 @@ async def ask(payload: AskRequest) -> AskResponse:
     )
 
 
+@app.post("/ask/stream")
+def ask_stream(payload: AskRequest) -> StreamingResponse:
+    """Server-sent events: tokens appear progressively (``curl -N``). See
+    ``LegalQAPredictor.stream_events`` for the event types."""
+
+    def events():
+        for event in predictor.stream_events(payload.question):
+            if event["type"] == "done":
+                metrics.observe_answer(event)
+            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(
+        events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"}
+    )
+
+
 @app.post("/ask/batch", response_model=AskBatchResponse)
-async def ask_batch(payload: AskBatchRequest) -> AskBatchResponse:
+def ask_batch(payload: AskBatchRequest) -> AskBatchResponse:
     start = time.perf_counter()
     raw_results = predictor.query_batch(payload.questions)
+    for r in raw_results:
+        metrics.observe_answer(r)
     latency_ms = (time.perf_counter() - start) * 1000
     per_item_latency = round(latency_ms / max(len(raw_results), 1), 2)
     results = [

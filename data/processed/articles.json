@@ -1,0 +1,62 @@
+[
+  {
+    "article_number": 1,
+    "book": "Preliminary Title",
+    "chapter": "General Provisions",
+    "section": "Application of the Law",
+    "topic": "Sources of law in the absence of legislative text",
+    "text_ar": "في حالة عدم وجود نص تشريعي يمكن تطبيقه، يحكم القاضي بمقتضى العرف، فإذا لم يوجد فبمقتضى مبادئ الشريعة الإسلامية، فإذا لم توجد فبمقتضى مبادئ القانون الطبيعي وقواعد العدالة.",
+    "text_en": "In the absence of any applicable legislative text, the judge shall decide according to custom, and failing custom, according to the principles of Islamic law, and failing those, according to the principles of natural law and the rules of equity.",
+    "is_repealed": false,
+    "source_page": 1,
+    "citation": "Egyptian Civil Code, Article 1"
+  },
+  {
+    "article_number": 147,
+    "book": "Obligations or Personal Rights",
+    "chapter": "Sources of Obligations",
+    "section": "Contracts",
+    "topic": "The Effects of a Contract — pacta sunt servanda",
+    "text_ar": "العقد شريعة المتعاقدين، فلا يجوز نقضه ولا تعديله إلا باتفاق الطرفين أو للأسباب التي يقررها القانون.",
+    "text_en": "The contract makes the law of the parties. It can be revoked or altered only by mutual consent of both parties, or for reasons provided for by law.",
+    "is_repealed": false,
+    "source_page": 34,
+    "citation": "Egyptian Civil Code, Article 147"
+  },
+  {
+    "article_number": 148,
+    "book": "Obligations or Personal Rights",
+    "chapter": "Sources of Obligations",
+    "section": "Contracts",
+    "topic": "Performance of contracts in good faith",
+    "text_ar": "يجب تنفيذ العقد طبقا لما اشتمل عليه وبطريقة تتفق مع ما يوجبه حسن النية.",
+    "text_en": "A contract must be performed in accordance with its contents and in a manner consistent with the requirements of good faith.",
+    "is_repealed": false,
+    "source_page": 34,
+    "citation": "Egyptian Civil Code, Article 148"
+  },
+  {
+    "article_number": 163,
+    "book": "Obligations or Personal Rights",
+    "chapter": "Sources of Obligations",
+    "section": "Tortious Liability",
+    "topic": "General rule of civil liability for wrongful acts",
+    "text_ar": "كل خطأ سبب ضررا للغير يلزم من ارتكبه بالتعويض.",
+    "text_en": "Any fault which causes damage to another obliges the person who committed it to make reparation.",
+    "is_repealed": false,
+    "source_page": 39,
+    "citation": "Egyptian Civil Code, Article 163"
+  },
+  {
+    "article_number": 60,
+    "book": "Persons",
+    "chapter": "Juristic Persons",
+    "section": "(repealed range)",
+    "topic": "[Repealed — placeholder]",
+    "text_ar": "",
+    "text_en": "[This article was repealed by a subsequent Presidential Decree; it is retained here, flagged, so the corpus does not silently have a gap that a RAG system might hallucinate around.]",
+    "is_repealed": true,
+    "source_page": null,
+    "citation": "Egyptian Civil Code, Article 60 (repealed)"
+  }
+]

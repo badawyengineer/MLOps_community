@@ -42,6 +42,9 @@ logger = logging.getLogger(__name__)
 # Arabic-Indic digits -> Western digits, so article_number can be an int
 _ARABIC_INDIC_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩", "0123456789")
 
+# Extended (Persian/Urdu) digits, which show up in PDF extractions from mixed-font sources
+_EXTENDED_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")
+
 # Arabic diacritics (harakat, tanween, sukun, shadda, quranic marks)
 _DIACRITICS_RE = re.compile(r"[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]")
 
@@ -52,7 +55,7 @@ class Article(TypedDict):
     chapter: str
     section: str
     topic: str
-    ar_text: str
+    text_ar: str
     text_en: str
     is_repealed: bool
     source_page: int | None
@@ -76,7 +79,7 @@ def normalize_arabic_text(text: str) -> str:
     NFC-normalize the unicode, strip diacritics, collapse whitespace.
     Deliberately does NOT fold alef/hamza/ta-marbuta variants here —
     that fold is a *search-index* transform (see retriever.py), not a
-    transform we want baked into the citable ``ar_text`` field.
+    transform we want baked into the citable ``text_ar`` field.
     """
     text = unicodedata.normalize("NFC", text)
     text = strip_diacritics(text)
@@ -91,10 +94,14 @@ def normalize_for_search(text: str) -> str:
     matches an article that has one.
     """
     text = normalize_arabic_text(text)
+    text = text.replace("\u0640", "")  # tatweel (kashida) elongation
+    text = arabic_indic_to_western(text)
+    text = text.translate(_EXTENDED_DIGITS)  # Persian/Urdu digit forms
     text = re.sub(r"[إأآا]", "ا", text)
     text = text.replace("ة", "ه")
     text = text.replace("ى", "ي")
-    return text
+    text = text.replace("ک", "ك").replace("ی", "ي")  # Persian kaf / yeh -> Arabic
+    return text.lower()
 
 
 def sample_corpus() -> list[Article]:
@@ -113,7 +120,7 @@ def sample_corpus() -> list[Article]:
             "chapter": "General Provisions",
             "section": "Application of the Law",
             "topic": "Sources of law in the absence of legislative text",
-            "ar_text": normalize_arabic_text(
+            "text_ar": normalize_arabic_text(
                 "في حالة عدم وجود نص تشريعي يمكن تطبيقه، يحكم القاضي بمقتضى "
                 "العرف، فإذا لم يوجد فبمقتضى مبادئ الشريعة الإسلامية، فإذا "
                 "لم توجد فبمقتضى مبادئ القانون الطبيعي وقواعد العدالة."
@@ -135,7 +142,7 @@ def sample_corpus() -> list[Article]:
             "chapter": "Sources of Obligations",
             "section": "Contracts",
             "topic": "The Effects of a Contract — pacta sunt servanda",
-            "ar_text": normalize_arabic_text(
+            "text_ar": normalize_arabic_text(
                 "العقد شريعة المتعاقدين، فلا يجوز نقضه ولا تعديله إلا باتفاق "
                 "الطرفين أو للأسباب التي يقررها القانون."
             ),
@@ -154,7 +161,7 @@ def sample_corpus() -> list[Article]:
             "chapter": "Sources of Obligations",
             "section": "Contracts",
             "topic": "Performance of contracts in good faith",
-            "ar_text": normalize_arabic_text(
+            "text_ar": normalize_arabic_text(
                 "يجب تنفيذ العقد طبقا لما اشتمل عليه وبطريقة تتفق مع ما " "يوجبه حسن النية."
             ),
             "text_en": (
@@ -172,7 +179,7 @@ def sample_corpus() -> list[Article]:
             "chapter": "Sources of Obligations",
             "section": "Tortious Liability",
             "topic": "General rule of civil liability for wrongful acts",
-            "ar_text": normalize_arabic_text("كل خطأ سبب ضررا للغير يلزم من ارتكبه بالتعويض."),
+            "text_ar": normalize_arabic_text("كل خطأ سبب ضررا للغير يلزم من ارتكبه بالتعويض."),
             "text_en": (
                 "Any fault which causes damage to another obliges the "
                 "person who committed it to make reparation."
@@ -187,7 +194,7 @@ def sample_corpus() -> list[Article]:
             "chapter": "Juristic Persons",
             "section": "(repealed range)",
             "topic": "[Repealed — placeholder]",
-            "ar_text": "",
+            "text_ar": "",
             "text_en": (
                 "[This article was repealed by a subsequent Presidential "
                 "Decree; it is retained here, flagged, so the corpus does "
@@ -202,8 +209,8 @@ def sample_corpus() -> list[Article]:
 
 
 def build_from_pdf(pdf_path: Path) -> list[Article]:
-    """Best-effort PDF -> Article extraction for the real bilingual
-    Egyptian Civil Code PDF.
+    """PDF -> Article extraction for the bilingual Egyptian Civil Code PDF
+    (implementation lives in ``prodml.ingest``).
 
     This is intentionally a *starting point*, not a finished parser —
     the handbook is explicit that this step eats an evening. Known
@@ -235,16 +242,11 @@ def build_from_pdf(pdf_path: Path) -> list[Article]:
         )
 
     try:
-        import pdfplumber  # noqa: F401  (optional dependency: pip install -e ".[pdf]")
+        from prodml.ingest import build_articles_from_pdf, parse_ranges
     except ImportError as exc:  # pragma: no cover - exercised only without the extra
         raise ImportError("PDF ingestion needs the 'pdf' extra: pip install -e '.[pdf]'") from exc
 
-    raise NotImplementedError(
-        "Column-aware bilingual extraction is source-PDF-specific. "
-        "Implement the extraction loop here against the actual file "
-        "layout once it's available — see the docstring above for the "
-        "checklist of what to get right."
-    )
+    return build_articles_from_pdf(pdf_path, repealed_ranges=parse_ranges(settings.repealed_ranges))
 
 
 def write_corpus(articles: list[Article], out_path: Path) -> None:

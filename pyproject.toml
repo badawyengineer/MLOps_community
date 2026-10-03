@@ -10,6 +10,8 @@ dependencies = [
     "pydantic-settings>=2.2",
     "scikit-learn>=1.4",
     "numpy>=1.26",
+    "prometheus-client>=0.20",
+    "httpx>=0.27",
 ]
 
 [project.optional-dependencies]
@@ -21,12 +23,38 @@ dev = [
     "black>=24.0",
     "pre-commit>=3.7",
 ]
+embeddings = [
+    "sentence-transformers>=3.0",
+]
+ragas = [
+    "ragas>=0.2",
+    "datasets>=2.19",
+]
+tracking = [
+    "mlflow>=2.12",
+    "dvc>=3.50",
+]
 pdf = [
     "pdfplumber>=0.11",
+]
+fixtures = [
+    "reportlab>=4.0",
+    "arabic-reshaper>=3.0",
+    "python-bidi>=0.5",
 ]
 
 [project.scripts]
 prodml-build-corpus = "prodml.corpus:main"
+prodml-eval = "prodml.evaluation:main"
+prodml-smoke = "prodml.smoke:main"
+prodml-ask = "prodml.ask:main"
+prodml-index = "prodml.indexing:main"
+prodml-reindex = "prodml.reindex:main"
+prodml-ingest = "prodml.ingest:main"
+prodml-validate = "prodml.validate_corpus:main"
+prodml-monitor = "prodml.monitor:main"
+prodml-experiments = "prodml.experiments:main"
+prodml-compare-llms = "prodml.compare_llms:main"
 
 [build-system]
 requires = ["setuptools>=68"]

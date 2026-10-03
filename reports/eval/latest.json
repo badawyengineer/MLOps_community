@@ -1,0 +1,780 @@
+{
+  "tfidf": {
+    "k": 1,
+    "threshold": 0.2,
+    "n_answerable": 16,
+    "n_unanswerable": 7,
+    "hit_at_k": 0.9375,
+    "recall_at_k": 0.9375,
+    "mrr": 0.9375,
+    "false_abstain_rate": 0.0625,
+    "correct_abstain_rate": 0.8571428571428571,
+    "retrieval_misses": [
+      "a1-2"
+    ],
+    "answered_out_of_scope": [
+      "x-6"
+    ],
+    "sweep": [
+      {
+        "k": 1,
+        "threshold": 0.0,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": [
+          "x-1",
+          "x-2",
+          "x-3",
+          "x-4",
+          "x-5",
+          "x-6",
+          "x-7"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.05,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": [
+          "x-1",
+          "x-2",
+          "x-3",
+          "x-4",
+          "x-5",
+          "x-6",
+          "x-7"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.1,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": [
+          "x-1",
+          "x-2",
+          "x-3",
+          "x-4",
+          "x-5",
+          "x-6",
+          "x-7"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.15,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.5714285714285714,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": [
+          "x-1",
+          "x-6",
+          "x-7"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.2,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.0625,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": [
+          "x-6"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.25,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.4375,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.3,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.625,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.35,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.8125,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.4,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.8125,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.45,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.9375,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.5,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.9375,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.55,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.9375,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.6,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.9375,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.65,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 1.0,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      }
+    ],
+    "best_threshold": 0.2
+  },
+  "bm25": {
+    "k": 1,
+    "threshold": 0.2,
+    "n_answerable": 16,
+    "n_unanswerable": 7,
+    "hit_at_k": 0.875,
+    "recall_at_k": 0.875,
+    "mrr": 0.875,
+    "false_abstain_rate": 0.0,
+    "correct_abstain_rate": 0.8571428571428571,
+    "retrieval_misses": [
+      "a1-2",
+      "a147-2"
+    ],
+    "answered_out_of_scope": [
+      "x-3"
+    ],
+    "sweep": [
+      {
+        "k": 1,
+        "threshold": 0.0,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.05,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.1,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.15,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.2,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.25,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 0.0625,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.3,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 0.0625,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.35,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 0.3125,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.4,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 0.4375,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.45,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 0.6875,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.5,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 0.9375,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.55,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 1.0,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.6,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 1.0,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.65,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.875,
+        "recall_at_k": 0.875,
+        "mrr": 0.875,
+        "false_abstain_rate": 1.0,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2",
+          "a147-2"
+        ],
+        "answered_out_of_scope": []
+      }
+    ],
+    "best_threshold": 0.0
+  },
+  "hybrid": {
+    "k": 1,
+    "threshold": 0.2,
+    "n_answerable": 16,
+    "n_unanswerable": 7,
+    "hit_at_k": 0.9375,
+    "recall_at_k": 0.9375,
+    "mrr": 0.9375,
+    "false_abstain_rate": 0.0,
+    "correct_abstain_rate": 0.8571428571428571,
+    "retrieval_misses": [
+      "a1-2"
+    ],
+    "answered_out_of_scope": [
+      "x-3"
+    ],
+    "sweep": [
+      {
+        "k": 1,
+        "threshold": 0.0,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": [
+          "x-1",
+          "x-2",
+          "x-3",
+          "x-4",
+          "x-5",
+          "x-6",
+          "x-7"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.05,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": [
+          "x-1",
+          "x-2",
+          "x-3",
+          "x-4",
+          "x-5",
+          "x-6",
+          "x-7"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.1,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.7142857142857143,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3",
+          "x-6"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.15,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.2,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.0,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.25,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.0625,
+        "correct_abstain_rate": 0.8571428571428571,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": [
+          "x-3"
+        ]
+      },
+      {
+        "k": 1,
+        "threshold": 0.3,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.25,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.35,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.6875,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.4,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.875,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.45,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.875,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.5,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.9375,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.55,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 0.9375,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.6,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 1.0,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      },
+      {
+        "k": 1,
+        "threshold": 0.65,
+        "n_answerable": 16,
+        "n_unanswerable": 7,
+        "hit_at_k": 0.9375,
+        "recall_at_k": 0.9375,
+        "mrr": 0.9375,
+        "false_abstain_rate": 1.0,
+        "correct_abstain_rate": 1.0,
+        "retrieval_misses": [
+          "a1-2"
+        ],
+        "answered_out_of_scope": []
+      }
+    ],
+    "best_threshold": 0.15
+  }
+}

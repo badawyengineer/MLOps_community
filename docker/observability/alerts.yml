@@ -1,0 +1,38 @@
+groups:
+  - name: legal-qa
+    rules:
+      - alert: FaithfulnessLow            # handbook: alert when faithfulness < 0.80
+        expr: prodml_eval_faithfulness < 0.80
+        for: 5m
+        labels: {severity: critical}
+        annotations:
+          summary: "Eval-set faithfulness {{ $value | printf \"%.2f\" }} (source={{ $labels.source }}) is below 0.80"
+      - alert: HighAbstentionRate
+        expr: rate(prodml_abstentions_total[15m]) / clamp_min(sum(rate(prodml_requests_total{path="/ask"}[15m])), 0.001) > 0.3
+        for: 15m
+        labels: {severity: warning}
+        annotations:
+          summary: "More than 30% of questions are refused for low retrieval confidence"
+      - alert: QueryEmbeddingDrift
+        expr: prodml_query_drift_drop > 0.15
+        for: 30m
+        labels: {severity: warning}
+        annotations:
+          summary: "Live questions have drifted away from the evaluation distribution (cosine drop {{ $value | printf \"%.2f\" }})"
+      - alert: LLMFallbacks
+        expr: rate(prodml_llm_fallbacks_total[10m]) > 0.05
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "LLM endpoint is failing; answers are falling back to extractive text"
+      - alert: UnsupportedCitations
+        expr: increase(prodml_guardrail_flags_total{flag="unsupported_citation"}[1h]) > 0
+        labels: {severity: warning}
+        annotations:
+          summary: "The model cited an article that was not in its context (hallucinated citation)"
+      - alert: SlowAsk
+        expr: histogram_quantile(0.95, sum(rate(prodml_request_latency_seconds_bucket{path="/ask"}[5m])) by (le)) > 1
+        for: 10m
+        labels: {severity: warning}
+        annotations:
+          summary: "p95 /ask latency above 1s"
