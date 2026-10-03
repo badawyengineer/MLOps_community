@@ -94,7 +94,14 @@ def log_to_mlflow(results: list[dict[str, Any]], ragas: dict[str, float] | None 
 
     if not os.environ.get("MLFLOW_TRACKING_URI"):
         mlflow.set_tracking_uri("sqlite:///mlflow.db")
-    mlflow.set_experiment("legal-qa-chunking-embedding")
+    name = "legal-qa-chunking-embedding"
+    if (
+        mlflow.get_experiment_by_name(name) is None
+    ):  # artifact root is configurable (tests use a tmp dir)
+        mlflow.create_experiment(
+            name, artifact_location=os.environ.get("PRODML_MLFLOW_ARTIFACTS") or None
+        )
+    mlflow.set_experiment(name)
     best = best_of(results)
     best_run_id = ""
     for r in results:
