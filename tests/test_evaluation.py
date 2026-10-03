@@ -61,7 +61,8 @@ def test_eval_set_rejects_inconsistent_labels(tmp_path) -> None:
     p.write_text(
         json.dumps(
             {"items": [{"id": "z", "question": "q", "relevant_articles": [1], "answerable": False}]}
-        )
+        ),
+        encoding="utf-8",
     )
     with pytest.raises(ValueError, match="disagrees"):
         ev.load_eval_set(p)
@@ -76,9 +77,9 @@ def test_shipped_eval_set_is_valid_and_balanced() -> None:
 
 def test_cli_gate_exit_codes(tmp_path) -> None:
     ok = tmp_path / "ok.json"
-    ok.write_text(json.dumps({"mrr": 0.5}))
+    ok.write_text(json.dumps({"mrr": 0.5}), encoding="utf-8")
     bad = tmp_path / "bad.json"
-    bad.write_text(json.dumps({"mrr": 1.01}))
+    bad.write_text(json.dumps({"mrr": 1.01}), encoding="utf-8")
     out = tmp_path / "r.json"
     assert (
         ev.main(["--retriever", "hybrid", "--k", "1", "--check", str(ok), "--out", str(out)]) == 0
@@ -95,7 +96,9 @@ def test_cli_compare_with_sweep(capsys) -> None:
 
 def test_gate_applies_only_to_shipped_retriever_in_compare_mode(tmp_path) -> None:
     gates = tmp_path / "g.json"
-    gates.write_text(json.dumps({"mrr": 0.9}))  # hybrid clears this, bm25 does not
+    gates.write_text(
+        json.dumps({"mrr": 0.9}), encoding="utf-8"
+    )  # hybrid clears this, bm25 does not
     assert (
         ev.main(
             [

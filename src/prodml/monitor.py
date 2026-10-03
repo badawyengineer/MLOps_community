@@ -19,6 +19,7 @@ from typing import Any
 
 from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 
+from prodml._console import ensure_utf8_output
 from prodml.evaluation import load_eval_set
 from prodml.rag import LegalQAPredictor
 
@@ -96,6 +97,7 @@ def log_mlflow(report: dict[str, Any]) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    ensure_utf8_output()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     ap.add_argument("--eval-set", type=Path, default=Path("data/eval/questions.json"))
     ap.add_argument("--push", metavar="GATEWAY_URL")

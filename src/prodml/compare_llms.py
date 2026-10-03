@@ -21,6 +21,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+from prodml._console import ensure_utf8_output
 from prodml.config import settings
 from prodml.evaluation import load_eval_set
 from prodml.faithfulness import faithfulness_proxy
@@ -81,6 +82,7 @@ def render_table(a: dict[str, Any], b: dict[str, Any], a_name: str, b_name: str)
 
 
 def main(argv: list[str] | None = None) -> int:
+    ensure_utf8_output()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     for side in "ab":
         ap.add_argument(f"--{side}-url", required=True)
@@ -102,7 +104,8 @@ def main(argv: list[str] | None = None) -> int:
         args.out.write_text(table + "\n", encoding="utf-8")
     if args.answers_json:
         args.answers_json.write_text(
-            json.dumps({"A": a["answers"], "B": b["answers"]}, ensure_ascii=False, indent=1)
+            json.dumps({"A": a["answers"], "B": b["answers"]}, ensure_ascii=False, indent=1),
+            encoding="utf-8",
         )
     return 0
 

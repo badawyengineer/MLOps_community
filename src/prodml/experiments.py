@@ -20,6 +20,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from prodml._console import ensure_utf8_output
 from prodml.config import settings
 from prodml.corpus import load_corpus, sample_corpus
 from prodml.embedders import build_embedder
@@ -116,7 +117,7 @@ def log_to_mlflow(results: list[dict[str, Any]], ragas: dict[str, float] | None 
                 best_run_id = run.info.run_id
                 with tempfile.TemporaryDirectory() as tmp:
                     cfg = Path(tmp) / "config.json"
-                    cfg.write_text(json.dumps(r["params"]))
+                    cfg.write_text(json.dumps(r["params"]), encoding="utf-8")
                     corpus = (
                         settings.corpus_path
                         if settings.corpus_path.exists()
@@ -173,6 +174,7 @@ def plot_runs(results: list[dict[str, Any]], out: Path) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    ensure_utf8_output()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     ap.add_argument("--models", nargs="+", default=["hashing-512", "hashing-1024", "lsa-32"])
     ap.add_argument("--k", type=int, default=1)
@@ -196,7 +198,7 @@ def main(argv: list[str] | None = None) -> int:
     b = best_of(results)["params"]
     print(f"\nbest: {b['embedding_model']} chunk={b['chunk_size']} overlap={b['overlap']}")
     if not args.no_mlflow:
-        ragas = json.loads(args.ragas_json.read_text()) if args.ragas_json else None
+        ragas = json.loads(args.ragas_json.read_text(encoding="utf-8")) if args.ragas_json else None
         print(
             "MLflow run:",
             log_to_mlflow(results, ragas),

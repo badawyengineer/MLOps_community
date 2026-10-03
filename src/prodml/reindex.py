@@ -17,6 +17,7 @@ import logging
 import sys
 from pathlib import Path
 
+from prodml._console import ensure_utf8_output
 from prodml.config import settings
 from prodml.corpus import Article, load_corpus, sample_corpus, write_corpus
 from prodml.validate_corpus import validate_corpus
@@ -53,6 +54,7 @@ def reindex(new_path: Path, dry_run: bool = False) -> dict[str, list[int]]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    ensure_utf8_output()
     logging.basicConfig(level="INFO", format="%(message)s")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     ap.add_argument("new_articles", type=Path)

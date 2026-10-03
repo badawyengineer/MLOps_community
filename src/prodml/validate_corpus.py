@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from itertools import pairwise
 
+from prodml._console import ensure_utf8_output
 from prodml.corpus import Article
 
 MAX_REASONABLE_ARTICLE_CHARS = 8000
@@ -98,6 +99,7 @@ def spot_check(articles: list[Article], n: int = 20, seed: int = 0) -> str:
 
 
 def main(argv: list[str] | None = None) -> None:  # pragma: no cover - thin CLI wrapper
+    ensure_utf8_output()
     import argparse
     import logging
     import sys

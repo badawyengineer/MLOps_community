@@ -15,6 +15,8 @@ import sys
 from collections.abc import Callable
 from typing import Any
 
+from prodml._console import ensure_utf8_output
+
 GOOD_Q = "Must contracts be performed in good faith?"
 OUT_OF_SCOPE = "كيف أطبخ الكشري؟"
 
@@ -132,7 +134,7 @@ def _checks(client: Any, live: bool) -> list[tuple[str, Callable[[], str]]]:
             r = evaluate(
                 build_retriever(settings.retriever).fit(arts), load_eval_set(), k=1, threshold=0.2
             )
-            gates = json.loads(Path("data/eval/thresholds.json").read_text())
+            gates = json.loads(Path("data/eval/thresholds.json").read_text(encoding="utf-8"))
             failures = check_gates(r, gates)
             assert not failures, failures
             return f"hit@1={r['hit_at_k']:.2f} MRR={r['mrr']:.2f} correct-abstain={r['correct_abstain_rate']:.2f}"
@@ -163,6 +165,7 @@ def run(client: Any, live: bool) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    ensure_utf8_output()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     ap.add_argument("--url", help="test a running server instead of starting one in-process")
     args = ap.parse_args(argv)

@@ -92,10 +92,11 @@ def test_reindex_adds_one_new_document_and_it_becomes_retrievable(corpus_env) ->
                     418, "Sale is a contract whereby the seller transfers ownership of a thing."
                 )
             ]
-        )
+        ),
+        encoding="utf-8",
     )
     assert ri.main([str(new)]) == 0
-    articles = json.loads(settings.corpus_path.read_text())
+    articles = json.loads(settings.corpus_path.read_text(encoding="utf-8"))
     assert (
         418 in {a["article_number"] for a in articles} and len(articles) == len(sample_corpus()) + 1
     )
@@ -114,16 +115,22 @@ def test_reindex_adds_one_new_document_and_it_becomes_retrievable(corpus_env) ->
 
 def test_reindex_replaces_an_amended_article_in_place(corpus_env) -> None:
     new = corpus_env / "amend.json"
-    new.write_text(json.dumps([_new_article(148, "AMENDED text of article 148.")]))
+    new.write_text(
+        json.dumps([_new_article(148, "AMENDED text of article 148.")]), encoding="utf-8"
+    )
     changes = ri.reindex(new, dry_run=True)
     assert changes == {"added": [], "replaced": [148]}
-    assert "AMENDED" not in settings.corpus_path.read_text()  # dry run wrote nothing
+    assert "AMENDED" not in settings.corpus_path.read_text(
+        encoding="utf-8"
+    )  # dry run wrote nothing
 
 
 def test_reindex_refuses_invalid_input_and_writes_nothing(corpus_env) -> None:
-    before = settings.corpus_path.read_text()
+    before = settings.corpus_path.read_text(encoding="utf-8")
     bad = corpus_env / "bad.json"
-    bad.write_text(json.dumps([{**_new_article(500, "x"), "text_ar": ""}]))  # empty Arabic text
+    bad.write_text(
+        json.dumps([{**_new_article(500, "x"), "text_ar": ""}]), encoding="utf-8"
+    )  # empty Arabic text
     assert ri.main([str(bad)]) == 1
     assert ri.main([str(corpus_env / "nope.json")]) == 1
-    assert settings.corpus_path.read_text() == before
+    assert settings.corpus_path.read_text(encoding="utf-8") == before

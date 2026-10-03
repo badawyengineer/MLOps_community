@@ -41,7 +41,7 @@ def test_push_builds_labelled_gauges_and_calls_gateway(monkeypatch) -> None:
 def test_monitor_cli_gate_and_report_file(tmp_path, monkeypatch) -> None:
     out = tmp_path / "r.json"
     assert monitor.main(["--out", str(out), "--min-faithfulness", "0.5"]) == 0
-    assert json.loads(out.read_text())["source"] == "proxy"
+    assert json.loads(out.read_text(encoding="utf-8"))["source"] == "proxy"
     assert monitor.main(["--out", str(out), "--min-faithfulness", "1.01"]) == 1
 
 

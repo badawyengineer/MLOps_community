@@ -47,6 +47,7 @@ fixtures = [
 prodml-build-corpus = "prodml.corpus:main"
 prodml-eval = "prodml.evaluation:main"
 prodml-smoke = "prodml.smoke:main"
+prodml-ask = "prodml.ask:main"
 prodml-index = "prodml.indexing:main"
 prodml-reindex = "prodml.reindex:main"
 prodml-ingest = "prodml.ingest:main"

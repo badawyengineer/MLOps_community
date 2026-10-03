@@ -25,6 +25,7 @@ import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from prodml._console import ensure_utf8_output
 from prodml.corpus import Article, arabic_indic_to_western, normalize_arabic_text, write_corpus
 
 logger = logging.getLogger(__name__)
@@ -263,6 +264,7 @@ def build_articles_from_pdf(
 
 
 def main(argv: list[str] | None = None) -> int:
+    ensure_utf8_output()
     logging.basicConfig(level="INFO", format="%(message)s")
     from prodml.config import settings
 

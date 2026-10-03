@@ -7,6 +7,7 @@ import argparse
 import logging
 import sys
 
+from prodml._console import ensure_utf8_output
 from prodml.config import settings
 from prodml.corpus import load_corpus, sample_corpus
 from prodml.embedders import build_embedder
@@ -34,6 +35,7 @@ def build_index(allow_sample: bool = False) -> VectorRetriever:
 
 
 def main(argv: list[str] | None = None) -> int:
+    ensure_utf8_output()
     logging.basicConfig(level="INFO", format="%(message)s")
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument(

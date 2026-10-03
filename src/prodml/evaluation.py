@@ -21,6 +21,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from prodml._console import ensure_utf8_output
 from prodml.config import settings
 from prodml.corpus import load_corpus, sample_corpus
 from prodml.retriever import RETRIEVERS, Retriever, build_retriever
@@ -147,6 +148,7 @@ def _log_mlflow(name: str, result: dict[str, Any]) -> None:  # pragma: no cover 
 
 
 def main(argv: list[str] | None = None) -> int:
+    ensure_utf8_output()
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     p.add_argument("--eval-set", type=Path, default=DEFAULT_EVAL_PATH)
     p.add_argument("--retriever", default=settings.retriever, choices=sorted(RETRIEVERS))
@@ -188,7 +190,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.check:
         # Gates guard the retriever that ships; --compare rows are informational only.
-        gates = json.loads(args.check.read_text())
+        gates = json.loads(args.check.read_text(encoding="utf-8"))
         shipped = args.retriever if args.retriever in report else names[0]
         failed = False
         for msg in check_gates(report[shipped], gates):
