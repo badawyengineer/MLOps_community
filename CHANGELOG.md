@@ -37,3 +37,4 @@
 - `prodml-index` silently fell back to the 5-article sample when the corpus was missing, which masked the above. It now errors unless `--allow-sample`.
 - Load test: a locustfile bug (missing `catch_response=True`) crashed the stream task while stats showed 0 failures; fixed and re-run.
 - Experiment ranking on MRR alone crowned a model that could never abstain; now ranks on retrieval + abstention quality.
+- **Windows:** `read_text()`/`write_text()` calls without `encoding="utf-8"` crashed on Windows (default cp1252) when reading the Arabic corpus (3 test failures on a real Windows machine), and printing Arabic to a redirected console raised `UnicodeEncodeError`. All text I/O is now explicit UTF-8, every CLI forces UTF-8 output, `.gitattributes` pins LF line endings, and regression tests run the CLIs in a non-UTF-8 locale plus a static check that no text I/O omits the encoding. Added `prodml-ask` (no curl/JSON quoting).

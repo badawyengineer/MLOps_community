@@ -13,9 +13,13 @@ confidence score - or a refusal when the corpus doesn't cover the question.
 ```bash
 git clone <this-repo> && cd mlops-legal-qa
 docker compose -f docker/docker-compose.yml up --build -d        # API on http://localhost:8000
-curl -X POST localhost:8000/ask -H 'Content-Type: application/json' -d '{"question": "Must contracts be performed in good faith?"}'
+prodml-ask "Must contracts be performed in good faith?" --url http://localhost:8000      # works on Windows, macOS, Linux
 ```
-No Docker? `pip install -e ".[dev]"` then `uvicorn prodml.api.main:app` (then the same `curl`).
+No Docker? `pip install -e ".[dev]"` then `prodml-ask "Must contracts be performed in good faith?"` (answers in-process; no server needed),
+or start the API with `uvicorn prodml.api.main:app` and use the `--url` form above.
+
+**Windows (Command Prompt):** create and activate the environment with
+`python -m venv .venv` then `.venv\Scripts\activate` (PowerShell: `.venv\Scripts\Activate.ps1`). Use `prodml-ask` instead of `curl`: Command Prompt does not understand the single-quoted JSON in `curl` examples. (If you prefer curl there, use `curl.exe` with escaped double quotes: `-d "{\"question\": \"...\"}"`.)
 
 ## Easiest way to test everything
 ```bash
@@ -23,7 +27,7 @@ pip install -e ".[dev,tracking,fixtures,pdf]"
 prodml-smoke                       # 12 PASS/FAIL checks in ~2 s: every endpoint, abstention, streaming,
                                    # metrics, guardrails, corpus validation, retrieval-quality gate
 prodml-smoke --url http://localhost:8000     # same checks against a running server / the Docker container
-pytest                             # 153 tests, 91% coverage
+pytest                             # 163 tests, 90% coverage (also run under a non-UTF-8 locale to simulate Windows)
 ```
 
 ## What's in it
@@ -82,6 +86,6 @@ src/prodml/      ingest, corpus, chunking, embedders, vectorstore, retriever, ra
                  faithfulness, tracing, drift, metrics, evaluation, experiments, monitor, reindex, smoke, bento_service, api/
 data/eval/       labelled questions + CI regression thresholds        loadtest/   locustfile
 docker/          Dockerfile, compose, Prometheus/Grafana/Alertmanager, canary    docs/   architecture, monitoring, gpu-runbook
-reports/         final-checklist, module reports, load test, eval results         tests/  153 tests + synthetic PDF fixture
+reports/         final-checklist, module reports, load test, eval results         tests/  163 tests + synthetic PDF fixture
 ```
 *Informational retrieval over statute text only; not legal advice.*
