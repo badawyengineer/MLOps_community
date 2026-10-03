@@ -126,7 +126,41 @@ def test_dense_hybrid_and_factory(articles) -> None:
 def test_index_cli_builds_and_persists(tmp_path, monkeypatch) -> None:
     from prodml import indexing
     from prodml.config import settings
+    from prodml.corpus import write_corpus
 
     monkeypatch.setattr(settings, "index_dir", tmp_path / "idx")
+    monkeypatch.setattr(settings, "corpus_path", tmp_path / "articles.json")
+    write_corpus(sample_corpus(), settings.corpus_path)
     assert indexing.main([]) == 0
     assert (tmp_path / "idx" / "vectors.npz").exists() and (tmp_path / "idx" / "meta.json").exists()
+
+
+def test_indexing_refuses_to_silently_use_the_sample_when_corpus_is_missing(
+    tmp_path, monkeypatch
+) -> None:
+    from prodml import indexing
+    from prodml.config import settings
+
+    monkeypatch.setattr(settings, "index_dir", tmp_path / "idx")
+    monkeypatch.setattr(settings, "corpus_path", tmp_path / "missing.json")
+    with pytest.raises(FileNotFoundError, match="No corpus"):
+        indexing.build_index()
+    assert indexing.build_index(allow_sample=True).store.meta["n_articles"] == len(sample_corpus())
+
+
+def test_corpus_json_is_not_gitignored_so_the_docker_build_and_reviewers_get_it() -> None:
+    """Regression: Module 1's .gitignore silently excluded the corpus, breaking `COPY data/processed/`."""
+    import shutil
+    import subprocess
+    from pathlib import Path
+
+    if shutil.which("git") is None or not (Path(__file__).parents[1] / ".git").exists():
+        pytest.skip("not a git checkout")
+    r = subprocess.run(
+        ["git", "check-ignore", "-q", "data/processed/articles.json"],
+        cwd=Path(__file__).parents[1],
+        check=False,
+    )
+    assert (
+        r.returncode == 1
+    ), "data/processed/articles.json is ignored by git - it must be committed"
