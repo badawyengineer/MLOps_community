@@ -1,0 +1,134 @@
+{
+ "A": [
+  {
+   "question": "بماذا يحكم القاضي إذا لم يوجد نص تشريعي؟",
+   "answer": "بناءً على Article 1 من المصدر предоставлен:\n\n\"في حالة عدم وجود نص تشريعي يمكن تطبيقه، يحكم القاضي بمقتضى العرف، فإذا لم يوجد فبمقتضى مبادئ الشريعة الإسلامية، فإذا لم توجد فبمقتضى مبادئ القانون الطبيعي وقواعد العدالة.\"\n\nإذا لم يوجد نص تشريعي، القاضي يُحكم بناءً على العرف، ثم على مبادئ الشريعة الإسلامية، وإذا لم توجد تلك، على مبادئ القانون الطبيعي وقواعد العدالة."
+  },
+  {
+   "question": "ما هو ترتيب مصادر القانون عند غياب النص؟",
+   "answer": "عند غياب النص التشريعي، يُرجح قانون الأحوال الشخصية المصري (Article 1) أن يكون الترتيب التالي:\n\n1. **Custom** (عرف): إذا كان هناك عرفًا مشتركًا بين المتعاقدين.\n2. **Principles of Islamic Law**: إذا لم يكن هناك عرف مشترك.\n3. **Principles of Natural Law and Rules of Equity**: إذا لم تكن هناك مبادئ الشريعة الإسلامية.\n\nهذه هي الخطوات التي يجب اتباعها في حالة غياب النص التشريعي للقانون."
+  },
+  {
+   "question": "هل يطبق القاضي العرف عند عدم وجود نص؟",
+   "answer": "نعم، يطبق القاضي العرف عند عدم وجود نص التشريع. [Article 1]"
+  },
+  {
+   "question": "What does a judge rely on when no legislation applies?",
+   "answer": "According to Article 1 of the Egyptian Civil Code, when there is no applicable legislative text, the judge shall decide based on custom (Article 1), then if custom is absent, they will follow the principles of Islamic law (Article 60). If neither custom nor Islamic law apply, the judge will proceed with the principles of natural law and the rules of equity (Article 1)."
+  },
+  {
+   "question": "هل يمكن لأحد الطرفين تعديل العقد منفردا؟",
+   "answer": "[Article 147] يجوز للطرفين تعديل العقد بناءً على اتفاقهما أو لأسباب قانونية محددة."
+  },
+  {
+   "question": "متى يجوز نقض العقد؟",
+   "answer": "يجوز نقض العقد فقط بناءً على اتفاق الطرفين أو لأسباب قانونية محددة. هذا هو ما جاء في المادة 147 من القانون المصري."
+  },
+  {
+   "question": "ما معنى أن العقد شريعة المتعاقدين؟",
+   "answer": "Article 147: \"العقد شريعة المتعاقدين، فلا يجوز نقضه ولا تعديله إلا باتفاق الطرفين أو للأسباب التي يقررها القانون.\"\n\nTranslation: Article 147 states: \"The contract is the law of the parties, it cannot be cancelled or amended except through mutual agreement between both parties, or for reasons provided by law.\""
+  },
+  {
+   "question": "Can a contract be changed without both parties agreeing?",
+   "answer": "No, according to Article 147, a contract can be revoked or altered only through mutual consent of both parties or for reasons provided by law."
+  },
+  {
+   "question": "هل يجب تنفيذ العقد بحسن نية؟",
+   "answer": "[Article 148] يجب تنفيذ العقد طبقا لما اشتمل عليه وبطريقة تتفق مع ما يوجبه حسن النية."
+  },
+  {
+   "question": "كيف يجب تنفيذ العقد؟",
+   "answer": "يجوز تنفيذ العقد طبقا لما اشتمل عليه وبطريقة تتفق مع ما يوجبه حسن النية، كما هو محدد في المادة 148 من قانون الأحوال الشخصية المصري."
+  },
+  {
+   "question": "ما التزام المتعاقد عند تنفيذ العقد وفقا لمقتضيات حسن النية؟",
+   "answer": "[Article 148] يُجُوز تنفيذ العقد في أسلوب يتفق مع ما يوجبه حسن النية."
+  },
+  {
+   "question": "Must contracts be performed in good faith?",
+   "answer": "Yes, according to Article 148, a contract must be performed in accordance with its contents and in a manner consistent with the requirements of good faith."
+  },
+  {
+   "question": "من المسؤول عن تعويض الضرر الذي يلحق بالغير؟",
+   "answer": "[Article 163]"
+  },
+  {
+   "question": "ما حكم الخطأ الذي يسبب ضررا للغير؟",
+   "answer": "يجوز أن يكون الحكم على هذا النوع من الخطأ حسب قواعد العرف في حالة عدم وجود نص تشريعي، أو بناءً على مبادئ الشريعة الإسلامية إذا كانت موجودة، أو بناءً على مبادئ القانون الطبيعي وقواعد العدالة إذا كانت هذه المبادئ موجودة."
+  },
+  {
+   "question": "هل يلتزم من أحدث ضررا بالتعويض؟",
+   "answer": "[Article 163] يلزم من ارتكب الخطأ بالتعويض."
+  },
+  {
+   "question": "Who must pay compensation for damage caused by a fault?",
+   "answer": "According to Article 163, any fault which causes damage to another obliges the person who committed it to make reparation."
+  }
+ ],
+ "B": [
+  {
+   "question": "بماذا يحكم القاضي إذا لم يوجد نص تشريعي؟",
+   "answer": "إذا لم يوجد نص تشريعي، يحكم القاضي بمقتضى العرف، وإذا لم يوجد فبمقتضى مبادئ الشريعة الإسلامية، فإذا لم توجد فبمقتضى مبادئ القانون الطبيعي وقواعد العدالة."
+  },
+  {
+   "question": "ما هو ترتيب مصادر القانون عند غياب النص؟",
+   "answer": "عند غياب النص التشريعي في مصر، يُرجح قانون الأحوال الشخصية المصري (Article 1) أن يكون الترتيب كالتالي:\n\n1. إذا كان هناك نص تشريعي، يتم تنفيذه مباشرة.\n2. إذا كان النص غير واضح أو لا يكمل، يُرجح قانون الأحوال الشخصية المصري (Article 1) أن يكون الترتيب كالتالي:\n   - إذا لم يكن هناك نص تشريعي يمكن تطبيقه، يُرجح قانون الأحوال الشخصية المصري (Article 1) أن يكون الترتيب كالتالي:\n     - إذا لم يكن هناك عرف، يُرجح قانون الأحوال الشخصية المصري (Article 1) أن يكون الترتيب كالتالي:\n       - إذا لم يكن هناك مبادئ الشريعة الإسلامية، يُرجح قانون الأحوال الشخصية المصري (Article 1) أن يكون الترتيب كالتالي:\n         - إذا لم يكن هناك مبادئ القانون الطبيعي وقواعد العدالة، يُرجح قانون الأحوال الشخصية المصري (Article 1) أن يكون الترتيب كالتالي:\n           - إذا لم يكن هناك مبادئ القانون الطبيعي وقواعد العدالة، يُرجح قانون الأحوال الشخصية المصري (Article 1) أن يكون الترتيب كالتالي:\n             - إذا لم يكن هناك مبادئ القانون الطبيعي وقواعد العدالة، يُرجح قانون الأحوال الشخصية المصري (Article 1) أن يكون الترتيب كالتالي:\n               - إذا لم يكن هناك مبادئ القانون الطبيعي وقواعد العدالة، يُرجح قانون الأحوال الشخصية المصري (Article 1) أن يكون الترتيب كالتالي:\n                 - إذا لم يكن هناك مبادئ القانون الطبيعي وقواعد العدالة، يُرجح قانون الأحوال الشخصية"
+  },
+  {
+   "question": "هل يطبق القاضي العرف عند عدم وجود نص؟",
+   "answer": "نعم، يطبق القاضي العرف عند عدم وجود نص. [Article 1]"
+  },
+  {
+   "question": "What does a judge rely on when no legislation applies?",
+   "answer": "According to Article 1, when there is no applicable legislative text, the judge shall decide based on custom, then move to Islamic law if custom fails, and finally fall back on natural law and the rules of equity if both custom and Islamic law fail."
+  },
+  {
+   "question": "هل يمكن لأحد الطرفين تعديل العقد منفردا؟",
+   "answer": "[Article 147] [No] [Article 148] [Yes]"
+  },
+  {
+   "question": "متى يجوز نقض العقد؟",
+   "answer": "[Article 147]"
+  },
+  {
+   "question": "ما معنى أن العقد شريعة المتعاقدين؟",
+   "answer": "Article 147"
+  },
+  {
+   "question": "Can a contract be changed without both parties agreeing?",
+   "answer": "No, according to Article 147, a contract can be revoked or altered only by mutual consent of both parties, or for reasons provided for by law."
+  },
+  {
+   "question": "هل يجب تنفيذ العقد بحسن نية؟",
+   "answer": "[Article 148]"
+  },
+  {
+   "question": "كيف يجب تنفيذ العقد؟",
+   "answer": "[Article 148] A contract must be performed in accordance with its contents and in a manner consistent with the requirements of good faith."
+  },
+  {
+   "question": "ما التزام المتعاقد عند تنفيذ العقد وفقا لمقتضيات حسن النية؟",
+   "answer": "[Article 148]"
+  },
+  {
+   "question": "Must contracts be performed in good faith?",
+   "answer": "Yes, according to Article 148, contracts must be performed in accordance with their contents and in a manner consistent with the requirements of good faith."
+  },
+  {
+   "question": "من المسؤول عن تعويض الضرر الذي يلحق بالغير؟",
+   "answer": "[Article 163]"
+  },
+  {
+   "question": "ما حكم الخطأ الذي يسبب ضررا للغير؟",
+   "answer": "[Article 163]"
+  },
+  {
+   "question": "هل يلتزم من أحدث ضررا بالتعويض؟",
+   "answer": "[Article 163] [No]"
+  },
+  {
+   "question": "Who must pay compensation for damage caused by a fault?",
+   "answer": "According to Article 163, any fault that causes damage to another obligates the person who committed it to make reparation."
+  }
+ ]
+}

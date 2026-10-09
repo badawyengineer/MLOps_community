@@ -1,0 +1,31 @@
+{
+  "dry_run": false,
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "quantized_model": "Qwen/Qwen2.5-1.5B-Instruct-AWQ",
+  "quantization": "official AWQ checkpoint published by the model authors (NOT quantized by this notebook)",
+  "gpus": [
+    [
+      "Tesla T4",
+      "7.5",
+      "15360 MiB"
+    ],
+    [
+      "Tesla T4",
+      "7.5",
+      "15360 MiB"
+    ]
+  ],
+  "vllm_version": "0.31.0",
+  "load_users": 50,
+  "llm_timeout_s": 120,
+  "load_test_llm_summary": {
+    "answers": 1757.0,
+    "llm_fallbacks": 0.0,
+    "prompt_tokens": 517682.0,
+    "completion_tokens": 73780.0,
+    "abstentions": 179.0,
+    "unsupported_citations": 0,
+    "faithfulness_proxy_mean": 0.548440736040608
+  },
+  "note": "real run"
+}
