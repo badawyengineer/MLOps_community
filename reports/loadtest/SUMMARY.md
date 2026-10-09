@@ -1,22 +1,29 @@
-# Load test - 50 concurrent users
+# Load test - 50 concurrent users, real LLM in the loop
 
-`locust -f loadtest/locustfile.py --host http://localhost:8000 --headless -u 50 -r 25 -t 25s --csv reports/loadtest/ask --html reports/loadtest/ask.html`
+`locust -f loadtest/locustfile.py --host http://localhost:8000 --headless -u 50 -r 5 -t 90s --csv reports/loadtest/ask --html reports/loadtest/ask.html`
+
+Run on Kaggle (2x Tesla T4). The API used the **vLLM** backend against the baseline model
+`Qwen/Qwen2.5-1.5B-Instruct` (served by vLLM 0.31.0, LLM timeout 120 s).
 
 | endpoint | requests | failures | req/s | p50 ms | p95 ms | p99 ms |
 |---|---|---|---|---|---|---|
-| /ask [abstain] | 97 | 0 | 3.9 | 4 | 590 | 710 |
-| /ask [ar] | 543 | 0 | 21.9 | 5 | 110 | 710 |
-| /ask [en] | 311 | 0 | 12.6 | 5 | 93 | 650 |
-| /ask/stream | 84 | 0 | 3.4 | 3 | 83 | 870 |
-| /health | 94 | 0 | 3.8 | 2 | 480 | 510 |
-| Aggregated | 1129 | 0 | 45.6 | 5 | 110 | 680 |
+| /ask [abstain] | 179 | 0 | 2.0 | 4 | 11 | 24 |
+| /ask [ar] | 893 | 0 | 10.0 | 930 | 4000 | 4200 |
+| /ask [en] | 508 | 0 | 5.7 | 930 | 1100 | 1100 |
+| /ask/stream | 166 | 0 | 1.9 | 3 | 9 | 17 |
+| /health | 188 | 0 | 2.1 | 2 | 4 | 14 |
+| Aggregated | 1934 | 0 | 21.7 | 880 | 4000 | 4100 |
+
+**What the LLM actually did** (read from the API's own `/metrics` during the run, see `run_info.json`):
+1757 answers, **0 fallbacks to extractive text**, 179 abstentions,
+0 unsupported citations, 517682 prompt / 73780 completion tokens,
+mean faithfulness proxy 0.548 (lexical proxy, not RAGAS).
+Locust exceptions: none (`ask_exceptions.csv` is header-only). Failures: 0.
 
 **Read this before quoting it.**
-- Backend was the **extractive** generator (no LLM call), single uvicorn worker, 5-article corpus.
-  A real LLM will dominate latency; re-run this test against vLLM and keep both reports.
-- Locust and the server shared one small CPU, and the 25 s run includes the ramp-up (all 50 users
-  spawn in 2 s), which is why p95/p99 are far above the p50.
-- An earlier run reported a clean pass while 119 stream tasks had crashed inside the locustfile
-  (a missing `catch_response=True`). It was discarded and re-run after the fix; the exceptions CSV
-  for this run is header-only and the stream task validates that a `done` event arrives.
-- Full interactive report: `ask.html`.
+- Latency here is dominated by the LLM. `/ask [abstain]`, `/ask/stream` and `/health` are fast because they never wait on a full generation.
+- `/ask [ar]` has a long tail (p95 about 4.1 s) compared with `/ask [en]` (p95 about 1.1 s). Its median is the same as English, so a
+  share of Arabic requests is much slower. The cause was not investigated (longer generations are the likely reason, but this is unverified).
+- Locust and the API ran in the same Kaggle session as both vLLM servers; the 90 s run includes a 10 s ramp-up (-r 5).
+- One run, one model size (1.5B), a 5-article corpus. Treat these as a mechanism check, not a capacity claim.
+- Interactive report: `ask.html`. The earlier extractive-backend test is kept in `SUMMARY_extractive.md`.
