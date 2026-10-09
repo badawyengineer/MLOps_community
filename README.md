@@ -1,10 +1,12 @@
 # Arabic Legal Q&A - Egyptian Civil Code (MLOps Practitioner, Project 2: LLM / RAG)
 
+[![CI/CD](https://github.com/badawyengineer/MLOps_community/actions/workflows/ci.yml/badge.svg)](https://github.com/badawyengineer/MLOps_community/actions/workflows/ci.yml)
+
 Ask a question in Arabic or English; get an answer **cited to Civil Code article numbers**, with a
 confidence score - or a refusal when the corpus doesn't cover the question.
 
-> **Status:** 16 of the 34 handbook checklist items are done, 11 partial, 7 not done (all 7 need a
-> GPU, a judge-LLM key, or the real PDF). See **[reports/final-checklist.md](reports/final-checklist.md)**
+> **Status:** 19 of the 34 handbook checklist items are done, 12 partial, 3 not done (all 3 need the
+> real PDF or a judge-LLM key). The GPU part (vLLM, AWQ, load test with the LLM in the loop) has been run on Kaggle: see [GPU run](#gpu-run-vllm-serving-awq-quantization-load-test). See **[reports/final-checklist.md](reports/final-checklist.md)**
 > for every item, its evidence, and exactly what is missing. Quality numbers below come from a
 > **5-article sample corpus and a 23-question bootstrap eval set**: they prove the machinery works,
 > not that the answers are good.
@@ -27,7 +29,7 @@ pip install -e ".[dev,tracking,fixtures,pdf]"
 prodml-smoke                       # 12 PASS/FAIL checks in ~2 s: every endpoint, abstention, streaming,
                                    # metrics, guardrails, corpus validation, retrieval-quality gate
 prodml-smoke --url http://localhost:8000     # same checks against a running server / the Docker container
-pytest                             # 163 tests, 90% coverage (also run under a non-UTF-8 locale to simulate Windows)
+pytest                             # 207 tests, 90% coverage (also run under a non-UTF-8 locale to simulate Windows)
 ```
 
 ## What's in it
@@ -47,6 +49,10 @@ pytest                             # 163 tests, 90% coverage (also run under a n
 | Monitoring stack | `docker compose -f docker/docker-compose.yml --profile observability up` ([docs/monitoring.md](docs/monitoring.md)) |
 | Quality monitor -> Prometheus + MLflow | `prodml-monitor --push http://localhost:9091 --mlflow` |
 | LLM before/after (quantization) | `prodml-compare-llms --a-url ... --b-url ...` |
+| LLM-assisted eval-question drafting | `prodml-evalgen generate ...`, review by hand, `prodml-evalgen merge ...` |
+| Alert notifications (local) | `prodml-alert-sink` then `prodml-alert-sink --fire-test-alert http://localhost:9093` |
+| GPU session (vLLM + AWQ + Locust on the real LLM) | `notebooks/kaggle_gpu_run.ipynb` on Kaggle (executed on 2x T4; free **dry-run mode** with a fake LLM also available). Results: [GPU run](#gpu-run-vllm-serving-awq-quantization-load-test) |
+| Evidence screenshots (MLflow, Grafana, Langfuse, alert) | [docs/evidence-runbook.md](docs/evidence-runbook.md) |
 
 Architecture (all five sessions): **[docs/architecture.md](docs/architecture.md)**.
 
@@ -54,12 +60,49 @@ Architecture (all five sessions): **[docs/architecture.md](docs/architecture.md)
 - **Retrieval** (23-question bootstrap set, k=1, threshold 0.20, `hybrid-dense`): hit@1 0.94, MRR 0.94,
   0 false refusals, refuses 6 of 7 out-of-scope questions. The threshold was tuned on this same set, so
   the abstention figure is optimistic.
+- **Bilingual consistency**: the same question in Arabic and English reaches the same decision in 4 of 4 matched pairs (a CI gate allows at most one disagreement). Four pairs is a small sample.
 - **Experiments**: 12 runs; the offline embeddings (hashing/LSA) tie the TF-IDF+BM25 hybrid at best.
   A pure-LSA model had the best MRR but could never refuse a question, so runs are ranked on retrieval
   *and* abstention quality. A real multilingual embedding model is the expected upgrade; it has not been run.
-- **Load** (50 users, extractive backend, 1 worker, shared CPU): ~46 req/s, p50 5 ms, p95 110 ms, p99 680 ms, 0 failures.
+- **Load, extractive backend** (50 users, 1 worker, shared CPU): ~46 req/s, p50 5 ms, p95 110 ms, p99 680 ms, 0 failures (archived in `reports/loadtest/SUMMARY_extractive.md`). **Load with the real LLM in the loop** is in the GPU run section below.
 - **Faithfulness** is a lexical *proxy* (labelled `proxy` everywhere), not RAGAS; the extractive generator
-  copies the article verbatim, so it is ~1.0 until a real LLM is plugged in.
+  copies the article verbatim, so it is ~1.0. With the real LLM the proxy is about 0.5 (see the GPU run section).
+
+## Running the GPU part on Kaggle (vLLM + AWQ + real-LLM load test)
+1. Upload `mlops-legal-qa-v5.tar.gz` as a Kaggle **Dataset** (or attach a `GH_TOKEN` secret for the private repo).
+2. Import `notebooks/kaggle_gpu_run.ipynb`, attach the Dataset with *Add Input*, set *Internet = On*.
+3. **Dry run first** (free CPU session, `DRY_RUN = True`): a fake LLM (`prodml-mock-llm`) proves the notebook works without spending GPU quota.
+4. Real run: *Accelerator = GPU T4 x2* (**not P100**), `DRY_RUN = False`, Run All. Outputs: `optimization.md`, `loadtest/`, `answers.json`, `run_info.json`, zipped.
+
+Dry-run numbers describe a stub and are never results.
+
+## GPU run: vLLM serving, AWQ quantization, load test
+
+Measured on Kaggle (2x Tesla T4, one GPU per server), vLLM 0.31.0. Notebook: `notebooks/kaggle_gpu_run.ipynb`.
+Raw evidence: `reports/run_info.json`, `reports/optimization.md`, `reports/answers.json`, `reports/loadtest/`, `reports/logs/`.
+
+- **Model served:** `Qwen/Qwen2.5-1.5B-Instruct` (baseline)
+- **Quantized model:** `Qwen/Qwen2.5-1.5B-Instruct-AWQ` - the **publisher's official AWQ checkpoint; we did not quantize it ourselves**
+
+### Baseline vs AWQ (16 answerable questions, retrieval shared)
+
+| metric | baseline | AWQ-4bit |
+|---|---|---|
+| latency p50 (ms) | 781 | 190 |
+| latency p95 (ms) | 2372 | 3292 |
+| tokens / s | 48 | 94 |
+| faithfulness (lexical proxy) | 0.52 | 0.38 |
+
+- AWQ roughly halves the per-token cost and cuts median latency about 4x, but **p95 is worse** in this run.
+- The faithfulness drop (0.143) **exceeds the 0.03 budget** on the proxy. It is a lexical proxy over only 16 questions, not RAGAS, so it is
+  indicative only; RAGAS was not run.
+- Run-to-run noise is large: an earlier run of the same comparison gave p50 628 -> 181 ms and 61 -> 99 tokens/s.
+- Quality caveat: at 1.5B the model is weak in Arabic. In the 16 saved baseline answers, one contains stray Russian text, and an Arabic smoke-test answer scored faithfulness 0.0.
+
+### Load test: 50 concurrent users, vLLM in the loop
+
+1,934 requests in 90 s, **0 failures, 0 fallbacks to extractive text** (checked from the API's own metrics), about 21.7 req/s,
+median 880 ms, p95 about 4.1 s. English `/ask` p95 is about 1.1 s; Arabic `/ask` has a long tail (p95 about 4.1 s). Details: [reports/loadtest/SUMMARY.md](reports/loadtest/SUMMARY.md).
 
 ## Configuration (environment variables, prefix `PRODML_`)
 `RETRIEVER` (default `hybrid-dense`), `EMBEDDING_MODEL` (`hashing-1024` | `lsa-32` | `<org>/<hf-model>`), `MIN_CONFIDENCE` (0.2),

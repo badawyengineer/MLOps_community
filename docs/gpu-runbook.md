@@ -1,9 +1,15 @@
 # GPU runbook: vLLM serving + AWQ quantization (Kaggle / Colab)
 
-**Status: NOT executed in the environment this repository was built in (no GPU).** Everything the
-repo needs for it is implemented and unit-tested against mocked endpoints (`prodml.llm`,
-`prodml.compare_llms`). The commands below are what you run on a free T4. Record what you actually
-measure in `reports/optimization.md`; never paste numbers you did not measure.
+**Fastest route: import `notebooks/kaggle_gpu_run.ipynb` into Kaggle - it automates every step below. Run it once with `DRY_RUN = True` on a free CPU session first (a fake LLM; it proves the plumbing without spending GPU quota).**
+
+**Status: executed once on Kaggle (2x Tesla T4, vLLM 0.31.0) with the publisher's official AWQ checkpoint.** Results are in
+`reports/optimization.md`, `reports/loadtest/` and `reports/run_info.json`, and summarised in the README. What has NOT been
+run: quantizing the model yourself (section 2 below / `QUANT_OPTION = "own"`) and real RAGAS (`RUN_RAGAS = True`).
+Record what you actually measure; never paste numbers you did not measure.
+
+**Environment notes from the real run:** Kaggle's image (Python 3.13, PyTorch 2.11 cu128, driver CUDA 13) needed
+`/usr/local/lib/python3.13/dist-packages/nvidia/cu13/lib` on `LD_LIBRARY_PATH` before vLLM would start (the notebook has a cell
+for it), and `VLLM_VERSION` is pinned to the version the reported run used. If pip replaces PyTorch, restart the session and run again.
 
 ## 1. Serve the baseline with vLLM
 ```bash
