@@ -1,0 +1,37 @@
+name: Quality monitor
+
+# Scheduled quality check. The free lexical-proxy check always runs. The real RAGAS check runs ONLY if the
+# repository secret OPENAI_API_KEY exists (Settings -> Secrets and variables -> Actions); it costs real money
+# and has not been run yet. A failure here never touches the CI status of main: this is a separate workflow.
+on:
+  schedule:
+    - cron: "0 6 * * 1"        # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[tracking]"
+      - name: Faithfulness (offline proxy)
+        run: prodml-monitor --min-faithfulness 0.75 --out reports/monitoring/latest.json
+      - name: Faithfulness (real RAGAS, only when the key is configured)
+        if: env.OPENAI_API_KEY != ''
+        run: |
+          pip install -e ".[ragas]"
+          prodml-monitor --ragas --min-faithfulness 0.75 --out reports/monitoring/ragas.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: monitoring
+          path: reports/monitoring/

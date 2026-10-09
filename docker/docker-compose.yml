@@ -18,6 +18,12 @@ services:
       # PRODML_GENERATION_BACKEND: vllm
       # PRODML_LLM_BASE_URL: http://host.docker.internal:8001/v1
       # PRODML_LLM_MODEL: Qwen/Qwen2.5-1.5B-Instruct
+      # Langfuse traces (self-hosted Langfuse runs in its OWN compose project, see docs/evidence-runbook.md):
+      # PRODML_LANGFUSE_HOST: http://host.docker.internal:3000
+      # PRODML_LANGFUSE_PUBLIC_KEY: pk-lf-...
+      # PRODML_LANGFUSE_SECRET_KEY: sk-lf-...
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # Linux needs this; Docker Desktop (Windows/macOS) has it built in
     restart: unless-stopped
 
   prometheus:
@@ -34,6 +40,8 @@ services:
     profiles: ["observability"]
     ports: ["9093:9093"]
     volumes: ["./observability/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # Linux needs this; Docker Desktop (Windows/macOS) has it built in
 
   pushgateway:
     image: prom/pushgateway:v1.9.0

@@ -1,0 +1,21 @@
+# Overlay for producing evidence (Grafana panels with real data, Langfuse traces). Use it ON TOP of the main file:
+#
+#   docker compose -f docker/docker-compose.yml -f docker/docker-compose.demo.yml --profile observability up --build
+#
+# - The API answers through an OpenAI-compatible LLM server running on the HOST at :8001. Without a GPU, start the
+#   built-in fake one:  prodml-mock-llm --port 8001 --model Qwen/Qwen2.5-1.5B-Instruct --latency-ms 60
+#   (its numbers describe a stub, never report latency from it; with it the token/cost panels get real *counter* data).
+# - Langfuse is optional: export PRODML_LANGFUSE_HOST / _PUBLIC_KEY / _SECRET_KEY in the shell before `up`.
+# - The cost panel is 0 for a self-hosted model unless you set an ASSUMED price (USD per 1k tokens):
+#   export PRODML_LLM_PRICE_IN_PER_1K=0.0005 PRODML_LLM_PRICE_OUT_PER_1K=0.0015   (label it as assumed in the report)
+services:
+  api:
+    environment:
+      PRODML_GENERATION_BACKEND: vllm
+      PRODML_LLM_BASE_URL: http://host.docker.internal:8001/v1
+      PRODML_LLM_MODEL: Qwen/Qwen2.5-1.5B-Instruct
+      PRODML_LLM_PRICE_IN_PER_1K: ${PRODML_LLM_PRICE_IN_PER_1K:-0}
+      PRODML_LLM_PRICE_OUT_PER_1K: ${PRODML_LLM_PRICE_OUT_PER_1K:-0}
+      PRODML_LANGFUSE_HOST: ${PRODML_LANGFUSE_HOST:-}
+      PRODML_LANGFUSE_PUBLIC_KEY: ${PRODML_LANGFUSE_PUBLIC_KEY:-}
+      PRODML_LANGFUSE_SECRET_KEY: ${PRODML_LANGFUSE_SECRET_KEY:-}

@@ -31,8 +31,11 @@ groups:
         annotations:
           summary: "The model cited an article that was not in its context (hallucinated citation)"
       - alert: SlowAsk
-        expr: histogram_quantile(0.95, sum(rate(prodml_request_latency_seconds_bucket{path="/ask"}[5m])) by (le)) > 1
+        # 1 s was right for the extractive generator. With a real LLM behind /ask, the Kaggle load test
+        # (50 users, 1.5B model on a T4) measured p95 of about 4 s, so 1 s would fire permanently.
+        # 5 s = "clearly worse than the measured baseline"; re-tune it for your own model and hardware.
+        expr: histogram_quantile(0.95, sum(rate(prodml_request_latency_seconds_bucket{path="/ask"}[5m])) by (le)) > 5
         for: 10m
         labels: {severity: warning}
         annotations:
-          summary: "p95 /ask latency above 1s"
+          summary: "p95 /ask latency above 5s"
