@@ -1,17 +1,17 @@
 # Final checklist - Project 2 (LLM / RAG, Arabic Legal Q&A)
 
 Checked item-by-item against the *Completion checklists* in the MLOps Practitioner handbook.
-**34 items: 19 done, 12 partial, 3 not done.** "Partial" always says what is missing.
+**34 items: 21 done, 12 partial, 1 not done.** "Partial" always says what is missing.
 Every "done" is backed by a test, a command you can run, or a file in this repo.
 
 **Verify the done items yourself:** `pip install -e ".[dev,tracking,fixtures,pdf]" && prodml-smoke && pytest`
 
-## Code, packaging, tracking, versioning (9 done / 5 partial / 2 not done)
+## Code, packaging, tracking, versioning (11 done / 5 partial / 0 not done)
 | Status | Handbook item | Evidence / what is missing |
 |---|---|---|
 | ✅ done | src/ layout with pyproject.toml; `pip install -e .` works | pyproject.toml, src/prodml; CI installs it |
-| ❌ not done | Civil Code PDF -> structured JSON, one record per article, committed | Extractor built and tested on a SYNTHETIC two-column fixture only. The committed JSON is the 5-article sample. Needs the real PDF: `prodml-ingest --dump 3`, then `prodml-ingest` |
-| ⚠️ partial | Extraction validated: ints, 20-article spot check, repealed flagged | All three mechanisms exist (`validate_corpus --strict`, `--spot-check 20`, repealed flagging + `PRODML_REPEALED_RANGES`) but have only run on the sample/fixture |
+| ✅ done | Civil Code PDF -> structured JSON, one record per article, committed | `data/processed/articles.json`: 1,149 articles from the real bilingual PDF (Arabic + English per article, Book/Chapter/Section/topic, page, citation). Extractor `src/prodml/ingest.py`; layout tests `tests/test_ingest_real_layout.py` |
+| ✅ done | Extraction validated: ints, 20-article spot check, repealed flagged | `prodml-validate --strict --spot-check 20` passes on the real corpus (contiguous 1-1149 apart from the repealed ranges). 56 repealed placeholders (54-80, 389-417, read from the PDF's own notes). One documented source defect: Article 1022 has no Arabic text in the PDF (`data/processed/known_issues.json`) |
 | ✅ done | Ingestion pipeline: JSON -> chunk by article -> embed -> vector store | `prodml-index`; default embedder is offline hashing. A real multilingual model is wired (`PRODML_EMBEDDING_MODEL=intfloat/multilingual-e5-small`) but was never run here (no model download) |
 | ✅ done | FastAPI /ask {question} -> {answer, sources[]}, sources are article citations | tests/test_api.py; sources look like `Egyptian Civil Code, Article 148` |
 | ✅ done | Pydantic rejects an empty question: 422, tested | tests/test_api.py::test_ask_rejects_empty_question |
@@ -21,7 +21,7 @@ Every "done" is backed by a test, a command you can run, or a file in this repo.
 | ⚠️ partial | MLflow logs chunk_size, overlap, embedding_model, faithfulness | Logged, but the faithfulness metric is the lexical PROXY (`faithfulness_proxy`), not RAGAS |
 | ⚠️ partial | >=5 runs compared; MLflow screenshot in /reports/ | 12 runs logged + a chart generated from them (reports/mlflow_runs_comparison.png); `prodml-experiments` re-run from a clean copy and registers `@champion`. The chart is NOT a UI screenshot: take `reports/screenshots/mlflow-runs.png` yourself (docs/evidence-runbook.md, Part A) |
 | ✅ done | Best chunking config registered in the MLflow Registry | `legal-qa-retriever@champion`; loaded back and predicted in a test |
-| ❌ not done | PDF and JSON both DVC-tracked; `dvc pull` fetches, `dvc repro` rebuilds JSON from PDF | JSON->index is a verified DVC pipeline. PDF tracking + a DVC remote need the PDF; exact 5 steps are at the top of dvc.yaml |
+| ⚠️ partial | PDF and JSON both DVC-tracked; `dvc pull` fetches, `dvc repro` rebuilds JSON from PDF | PDF tracked (`data/raw/egyptian_civil_code.pdf.dvc`) and `dvc repro` rebuilds JSON from the PDF, validates, indexes and evaluates (verified). **Missing: a DVC remote**, so `dvc pull` cannot fetch the PDF yet - `dvc remote add -d storage <url> && dvc push` |
 | ✅ done | `dvc repro` re-indexes the corpus reproducibly | verified: 4 stages run, second run skips |
 | ⚠️ partial | GitHub Actions: lint -> test -> rebuild index -> push Docker image | CI ran green on PR #2 (lint, tests, retrieval + faithfulness gates, smoke, Docker build/run). An explicit `prodml-index` step now makes the 'rebuild index' stage visible, and a scheduled `monitor.yml` runs the quality check weekly (RAGAS only if `OPENAI_API_KEY` is set). Every CI command was re-run locally from the repo and passes (lint, 207 tests, both gates, smoke). NOT yet verified on GitHub: the latest run on `main` (the first one, #2, failed in 15 s - its log was never read) and the Docker Hub `publish` job (needs DOCKERHUB_USERNAME / DOCKERHUB_TOKEN; it skips cleanly without them) |
 | ⚠️ partial | CI fails if RAGAS faithfulness < 0.75 on a 20-question set | Gate exists but uses the lexical proxy over the 16 answerable eval questions. A real RAGAS gate needs a judge-LLM key and a 20-question set |
@@ -35,7 +35,7 @@ Every "done" is backed by a test, a command you can run, or a file in this repo.
 | ✅ done | Locust report at 50 concurrent users in /reports/ | reports/loadtest/ask.html + SUMMARY.md: 50 users, 90 s, **vLLM in the loop**, 1,934 requests, 0 failures, 0 LLM fallbacks (checked from the API's own metrics). The earlier extractive-backend test is archived in `loadtest/SUMMARY_extractive.md` |
 | ✅ done | Batch re-indexing script tested with >=1 new document | `prodml-reindex`; tested: new article becomes retrievable, bad input writes nothing |
 | ✅ done | Canary rollout config documented in README | docker/canary/nginx.conf (90/10) + README section. Config only: never executed |
-| ❌ not done | RAGAS on >=50 questions, all 4 metrics logged | Needs a judge LLM + 50 reviewed questions on the real corpus (have 23). `prodml-evalgen` drafts candidates with an LLM for human review; `prodml-monitor --ragas` is implemented but unrun |
+| ❌ not done | RAGAS on >=50 questions, all 4 metrics logged | Needs a judge LLM and a HUMAN-REVIEWED question set: the real-corpus eval set now has 121 items, but the 98 new ones were AI-drafted and are unreviewed. `prodml-evalgen` drafts candidates with an LLM for human review; `prodml-monitor --ragas` is implemented but unrun |
 | ⚠️ partial | RAGAS results stored in MLflow; trend visible across sessions | `prodml-monitor --mlflow` logs every pass (tested, 2 runs). Values are proxy scores until RAGAS is run |
 | ⚠️ partial | Alert: faithfulness < 0.80 -> notification triggered | Rule + Alertmanager written. `prodml-alert-sink` (a local receiver) and `--fire-test-alert` are built and live-tested against an Alertmanager-shaped payload; the real Alertmanager -> sink path never ran (needs the Docker stack: docs/evidence-runbook.md, Part B). `SlowAsk` threshold raised 1 s -> 5 s because the measured LLM p95 is about 4 s |
 | ⚠️ partial | Langfuse self-hosted; every /ask creates a trace with spans | Exporter implemented and tested against a mock Langfuse API. Not run against a real server (needs Docker; steps in docs/evidence-runbook.md, Part C; the demo compose overlay passes the keys through) |
@@ -48,16 +48,19 @@ Every "done" is backed by a test, a command you can run, or a file in this repo.
 | ✅ done | Latency before vs after quantization in README | Measured, 2x T4, n=16: p50 781 -> 190 ms, tokens/s 48 -> 94, but **p95 got worse** 2372 -> 3292 ms. An earlier run of the same comparison gave p50 628 -> 181 ms, so treat the figures as noisy. Table in the README section 'GPU run' and `reports/optimization.md` |
 | ✅ done | Final architecture diagram covering all 5 sessions | docs/architecture.md (Mermaid) and README |
 
-## The five things that unlock most of what is left
-1. **The real PDF** -> `prodml-ingest --dump 3` (read it!), `prodml-ingest`, `prodml-validate --strict`, `dvc add` the PDF. Closes 3 items and makes every metric in this repo meaningful.
-2. **A judge-LLM key** -> `prodml-monitor --ragas --mlflow --push ...` on a 50-question set. Closes the RAGAS items.
-3. ~~A GPU session~~ **Done** (Kaggle 2x T4, see `reports/run_info.json`). What is left from it: real RAGAS before/after (`RUN_RAGAS = True`, judge-LLM key) and, if wanted, quantizing the model yourself (`QUANT_OPTION = "own"`).
+## What unlocks most of what is left
+1. ~~The real PDF~~ **Done** (1,149 articles, DVC-tracked). Still to do: a DVC remote, and a human review of `data/eval/questions.json`.
+2. **A judge-LLM key** -> `prodml-monitor --ragas --mlflow --push ...` on the reviewed question set. Closes the RAGAS items.
+3. ~~A GPU session~~ **Done** (Kaggle 2x T4, see `reports/run_info.json`). What is left from it: re-run it against the real corpus, real RAGAS before/after (`RUN_RAGAS = True`, judge-LLM key) and, if wanted, quantizing the model yourself (`QUANT_OPTION = "own"`).
 4. **Docker + GitHub** -> push the branch; the CI `docker` job builds the image, checks the baked index and non-root user, and smoke-tests it over HTTP. Add the DOCKERHUB_* secrets for the publish job.
 5. **Screenshots** (MLflow UI, Grafana, Langfuse, alert received) for `reports/screenshots/` - follow `docs/evidence-runbook.md`; nothing here can take them for you.
+6. **Better retrieval**: a real multilingual embedding model. Abstention on near-domain out-of-scope questions is weak with the offline embeddings (see README).
 
 ## Honesty clause
-No number in this repository was invented. Every figure is from a command that was run, on the 5-article
-sample corpus and a 23-question bootstrap eval set - **treat all quality numbers as mechanism checks,
-not results**. The faithfulness figures are a lexical proxy and are labelled `proxy` everywhere; they
-are never reported as RAGAS. The GPU-run numbers (latency, tokens/s, load test) are real measurements on a 1.5B model from one
-Kaggle session; the quantization faithfulness check used 16 questions and the proxy, so it is indicative only.
+No number in this repository was invented. Every figure is from a command that was run. Retrieval and abstention
+figures are measured on the REAL 1,149-article corpus with a 121-question eval set, of which 98 questions were drafted
+by an AI assistant from the article texts and have not been reviewed by a human expert - so they are real measurements
+of an unreviewed benchmark, and the 0.30 abstention threshold was tuned on that same set (optimistic). The faithfulness
+figures are a lexical proxy and are labelled `proxy` everywhere; they are never reported as RAGAS. The GPU-run numbers
+(latency, tokens/s, load test, the 16-question quantization check) are real measurements on a 1.5B model from one Kaggle
+session that PREDATES the real corpus (they used the 5-article sample), so they are indicative only. The MLflow grid was re-run on the real corpus (dense-only retrieval).

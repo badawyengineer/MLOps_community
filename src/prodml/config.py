@@ -17,7 +17,9 @@ class Settings(BaseSettings):
     # --- corpus / data ---
     raw_pdf_path: Path = Path("data/raw/egyptian_civil_code.pdf")
     corpus_path: Path = Path("data/processed/articles.json")
-    repealed_ranges: str = "54-80"  # Presidential-Decree-repealed articles, flagged not dropped
+    repealed_ranges: str = (
+        "54-80,389-417"  # Presidential-Decree-repealed articles, flagged not dropped
+    )
 
     # --- retrieval ---
     top_k: int = 3
@@ -30,7 +32,7 @@ class Settings(BaseSettings):
     retriever: str = (
         "hybrid-dense"  # "tfidf" | "bm25" | "hybrid" | "vector" | "hybrid-dense" | "embedding"
     )
-    min_confidence: float = 0.2  # abstain when the top score is below this (calibrate via eval)
+    min_confidence: float = 0.3  # abstain when the top score is below this (calibrate via eval)
     max_context_chars: int = 4000
 
     # --- service ---

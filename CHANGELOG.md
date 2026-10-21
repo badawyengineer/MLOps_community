@@ -1,5 +1,18 @@
 # Changelog (by handbook session)
 
+## Unreleased - real Civil Code corpus
+- Ingest the real bilingual PDF (1,149 articles). `ingest.py` handles visual-order Arabic with lam-alef ligature glyphs,
+  bold-font headings (Book/Chapter/Section/topic), the promulgation-law preamble, in-text repeal notes (54-80, 389-417),
+  cross-reference lines, inline markers and bold-body glitches; `is_repealed` no longer fires on long articles that merely
+  mention "repealed" (Article 2).
+- DVC tracks the PDF; `dvc repro` rebuilds the corpus from it, validates `--strict`, indexes and evaluates.
+- `validate_corpus`: `known_issues.json` documents source-PDF defects (Article 1022 has no Arabic text).
+- Fix: `prodml-eval --compare` now tables the shipped retriever and gates it (it used to gate `tfidf` when the shipped
+  retriever was not an offline baseline, which would have failed CI).
+- Eval set expanded from 23 to 121 items (AI-drafted, unreviewed); abstention threshold 0.2 -> 0.3; CI gates re-measured
+  on the real corpus (hit@1 0.60, MRR 0.60, correct-abstain 0.53, false-abstain 0.11).
+- Tests: new `tests/test_ingest_real_layout.py` and a gate regression test; sample-corpus-specific tests updated.
+
 ## Session 1 - Package
 - `src/prodml` package, env-driven config, JSON logging with correlation IDs.
 - FastAPI `/ask`, `/ask/batch`, `/health`, `/metadata`; Pydantic validation (422).

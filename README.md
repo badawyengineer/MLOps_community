@@ -5,15 +5,16 @@
 Ask a question in Arabic or English; get an answer **cited to Civil Code article numbers**, with a
 confidence score - or a refusal when the corpus doesn't cover the question.
 
-> **Status:** 19 of the 34 handbook checklist items are done, 12 partial, 3 not done (all 3 need the
-> real PDF or a judge-LLM key). The GPU part (vLLM, AWQ, load test with the LLM in the loop) has been run on Kaggle: see [GPU run](#gpu-run-vllm-serving-awq-quantization-load-test). See **[reports/final-checklist.md](reports/final-checklist.md)**
-> for every item, its evidence, and exactly what is missing. Quality numbers below come from a
-> **5-article sample corpus and a 23-question bootstrap eval set**: they prove the machinery works,
-> not that the answers are good.
+> **Status:** 21 of the 34 handbook checklist items are done, 12 partial, 1 not done (RAGAS needs a
+> judge-LLM key). The GPU part (vLLM, AWQ, load test with the LLM in the loop) has been run on Kaggle: see [GPU run](#gpu-run-vllm-serving-awq-quantization-load-test). See **[reports/final-checklist.md](reports/final-checklist.md)**
+> for every item, its evidence, and exactly what is missing. The corpus is the **real Egyptian Civil Code
+> (1,149 articles, from the bilingual PDF)**. Retrieval numbers are measured on a **121-question eval set that an
+> AI assistant drafted from the article texts and that has not yet been reviewed by a human expert**; the GPU-run
+> answer-quality numbers were measured earlier, on the 5-article sample.
 
 ## Run it - 3 commands
 ```bash
-git clone <this-repo> && cd mlops-legal-qa
+git clone https://github.com/badawyengineer/MLOps_community && cd MLOps_community
 docker compose -f docker/docker-compose.yml up --build -d        # API on http://localhost:8000
 prodml-ask "Must contracts be performed in good faith?" --url http://localhost:8000      # works on Windows, macOS, Linux
 ```
@@ -29,7 +30,7 @@ pip install -e ".[dev,tracking,fixtures,pdf]"
 prodml-smoke                       # 12 PASS/FAIL checks in ~2 s: every endpoint, abstention, streaming,
                                    # metrics, guardrails, corpus validation, retrieval-quality gate
 prodml-smoke --url http://localhost:8000     # same checks against a running server / the Docker container
-pytest                             # 207 tests, 90% coverage (also run under a non-UTF-8 locale to simulate Windows)
+pytest                             # 175 tests, ~91% coverage (also run under a non-UTF-8 locale to simulate Windows)
 ```
 
 ## What's in it
@@ -56,20 +57,21 @@ pytest                             # 207 tests, 90% coverage (also run under a n
 
 Architecture (all five sessions): **[docs/architecture.md](docs/architecture.md)**.
 
-## Measured results (sample corpus - read the caveats)
-- **Retrieval** (23-question bootstrap set, k=1, threshold 0.20, `hybrid-dense`): hit@1 0.94, MRR 0.94,
-  0 false refusals, refuses 6 of 7 out-of-scope questions. The threshold was tuned on this same set, so
-  the abstention figure is optimistic.
-- **Bilingual consistency**: the same question in Arabic and English reaches the same decision in 4 of 4 matched pairs (a CI gate allows at most one disagreement). Four pairs is a small sample.
-- **Experiments**: 12 runs; the offline embeddings (hashing/LSA) tie the TF-IDF+BM25 hybrid at best.
-  A pure-LSA model had the best MRR but could never refuse a question, so runs are ranked on retrieval
-  *and* abstention quality. A real multilingual embedding model is the expected upgrade; it has not been run.
-- **Load, extractive backend** (50 users, 1 worker, shared CPU): ~46 req/s, p50 5 ms, p95 110 ms, p99 680 ms, 0 failures (archived in `reports/loadtest/SUMMARY_extractive.md`). **Load with the real LLM in the loop** is in the GPU run section below.
+## Measured results (real corpus - read the caveats)
+- **Corpus**: 1,149 articles from the real bilingual PDF; 56 are repealed placeholders (Articles 54-80 and 389-417, both read from the PDF's own repeal notes). **Article 1022 has no Arabic text in the source PDF** - a documented known defect (`data/processed/known_issues.json`), not a parsing bug.
+- **Eval set**: 121 items (102 answerable, 19 out of scope; 67 Arabic, 54 English). The first 23 are the original bootstrap items; the rest were drafted by an AI assistant from the article texts and spot-checked against them. **Review them by hand before trusting any figure.**
+- **Retrieval** (shipped `hybrid-dense`, k=1, abstention threshold 0.30): hit@1 **0.598**, MRR 0.598 (hit@3 0.833); 11% of answerable questions are wrongly refused and 53% of out-of-scope questions are correctly refused. On the same set plain `hybrid` (BM25 + TF-IDF) gets hit@1 0.667 and `bm25` 0.657, so the lexical models beat the hashing-dense mix at k=1 and tie it at k=3. These numbers are far below the 0.94 measured on the 5-article sample: finding one article among 1,149 is much harder.
+- **Abstention is weak.** 9 of the 19 out-of-scope questions are still answered, including near-domain ones ("penalty for drunk driving" scores 0.53). The offline hashing/LSA embeddings cannot separate them from civil-liability articles; a real multilingual embedding model is the expected fix and has not been run. The 0.30 threshold is the balanced-accuracy optimum on this same set, so it is optimistic.
+- **Tried and dropped**: an English light stemmer gave no gain (hit@1 flat to -2 points), so it was not shipped.
+- **Source-document caveat**: the Arabic text layer contains OCR-style typos (for example `العاقر` for `العقار`), which slightly hurt Arabic retrieval; the English column is cleaner.
+- **Experiments** (12 runs, re-run on the real corpus; dense-only retrieval, so not comparable to the hybrid numbers above): best run `hashing-1024`, chunk 200, overlap 0 (registered as `legal-qa-retriever@champion`); the pure-LSA runs never abstain correctly. The shipped default is un-chunked; trying chunk 200 on the shipped `hybrid-dense` gave hit@1 0.63 (vs 0.60) but correct-abstain 0.37 (vs 0.53), a trade-off rather than a clear win, so the default was not changed.
+- **Measured before the real corpus arrived** (5-article sample): bilingual consistency (4 of 4 matched pairs).
+- **Load, extractive backend** (50 users, 1 worker, shared CPU, sample corpus): ~46 req/s, p50 5 ms, p95 110 ms, p99 680 ms, 0 failures (archived in `reports/loadtest/SUMMARY_extractive.md`). **Load with the real LLM in the loop** is in the GPU run section below.
 - **Faithfulness** is a lexical *proxy* (labelled `proxy` everywhere), not RAGAS; the extractive generator
   copies the article verbatim, so it is ~1.0. With the real LLM the proxy is about 0.5 (see the GPU run section).
 
 ## Running the GPU part on Kaggle (vLLM + AWQ + real-LLM load test)
-1. Upload `mlops-legal-qa-v5.tar.gz` as a Kaggle **Dataset** (or attach a `GH_TOKEN` secret for the private repo).
+1. The repo is public, so the notebook can `git clone https://github.com/badawyengineer/MLOps_community` (no token needed); alternatively upload a copy as a Kaggle **Dataset**.
 2. Import `notebooks/kaggle_gpu_run.ipynb`, attach the Dataset with *Add Input*, set *Internet = On*.
 3. **Dry run first** (free CPU session, `DRY_RUN = True`): a fake LLM (`prodml-mock-llm`) proves the notebook works without spending GPU quota.
 4. Real run: *Accelerator = GPU T4 x2* (**not P100**), `DRY_RUN = False`, Run All. Outputs: `optimization.md`, `loadtest/`, `answers.json`, `run_info.json`, zipped.
@@ -105,10 +107,10 @@ Raw evidence: `reports/run_info.json`, `reports/optimization.md`, `reports/answe
 median 880 ms, p95 about 4.1 s. English `/ask` p95 is about 1.1 s; Arabic `/ask` has a long tail (p95 about 4.1 s). Details: [reports/loadtest/SUMMARY.md](reports/loadtest/SUMMARY.md).
 
 ## Configuration (environment variables, prefix `PRODML_`)
-`RETRIEVER` (default `hybrid-dense`), `EMBEDDING_MODEL` (`hashing-1024` | `lsa-32` | `<org>/<hf-model>`), `MIN_CONFIDENCE` (0.2),
+`RETRIEVER` (default `hybrid-dense`), `EMBEDDING_MODEL` (`hashing-1024` | `lsa-32` | `<org>/<hf-model>`), `MIN_CONFIDENCE` (0.3),
 `CHUNK_CHARS` / `CHUNK_OVERLAP` (0 = one chunk per article), `GENERATION_BACKEND` (`extractive` | `vllm` | `api`),
 `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_PRICE_IN_PER_1K` / `_OUT_` (for the cost panel),
-`LANGFUSE_HOST` / `_PUBLIC_KEY` / `_SECRET_KEY`, `REPEALED_RANGES` (`54-80`).
+`LANGFUSE_HOST` / `_PUBLIC_KEY` / `_SECRET_KEY`, `REPEALED_RANGES` (`54-80,389-417`; ranges announced by the PDF itself are merged in).
 
 ## Canary rollout
 `docker compose -f docker/docker-compose.yml --profile canary up` puts nginx in front of a stable and a
@@ -117,11 +119,11 @@ while abstention rate, p95 latency, `prodml_faithfulness_proxy` and guardrail fl
 Grafana; **roll back** by setting the canary weight to 0. Every response carries `model_version`, so you can
 see which side answered. *(Config only - not executed in the build environment.)*
 
-## Using the real Civil Code PDF (the biggest remaining step)
-1. Put it at `data/raw/egyptian_civil_code.pdf`, then `prodml-ingest --dump 3` and **read the columns**: layouts differ, and the extractor was only tested on a synthetic fixture.
-2. Fix patterns in `src/prodml/ingest.py` if needed, then `prodml-ingest && prodml-validate --strict --spot-check 20`.
-3. `dvc add data/raw/egyptian_civil_code.pdf`, wire the PDF into `dvc.yaml` (steps at its top), `dvc repro`.
-4. Expand `data/eval/questions.json` to 50-100 items, re-run `prodml-eval --sweep`, **re-tune `PRODML_MIN_CONFIDENCE`**, update `data/eval/thresholds.json`.
+## Rebuilding from the real Civil Code PDF
+- The PDF (`data/raw/egyptian_civil_code.pdf`) is **DVC-tracked**: the pointer `data/raw/egyptian_civil_code.pdf.dvc` is in Git, the 2.6 MB file is not. **No DVC remote is configured yet**, so on a fresh clone either put the PDF at that path yourself or (owner, once) run `dvc remote add -d storage <s3-or-gdrive-or-path> && dvc push`; after that anyone can `dvc pull && dvc repro`.
+- `dvc repro` runs: ingest PDF -> strict validation -> index -> evaluation with the CI gates. To look at the raw extraction first: `prodml-ingest --dump 3` (a `*` marks bold lines, which are treated as headings).
+- How the real layout is handled (`src/prodml/ingest.py`): bilingual pages are split by script; visual-order Arabic is detected and un-reversed with lam-alef ligature glyphs kept intact; bold lines are Book/Chapter/Section/topic headings; the promulgation-law preamble is skipped; repeal notes ("Articles 389-417 repealed") are read, their footnotes dropped and placeholders inserted; cross-references such as "Article 444." are not mistaken for article markers.
+- **Next for quality**: review `data/eval/questions.json` by hand, run a real multilingual embedding model (`PRODML_EMBEDDING_MODEL`), then re-run `prodml-eval --sweep`, `prodml-experiments` and update `data/eval/thresholds.json`.
 
 ## Layout
 ```
@@ -129,6 +131,6 @@ src/prodml/      ingest, corpus, chunking, embedders, vectorstore, retriever, ra
                  faithfulness, tracing, drift, metrics, evaluation, experiments, monitor, reindex, smoke, bento_service, api/
 data/eval/       labelled questions + CI regression thresholds        loadtest/   locustfile
 docker/          Dockerfile, compose, Prometheus/Grafana/Alertmanager, canary    docs/   architecture, monitoring, gpu-runbook
-reports/         final-checklist, module reports, load test, eval results         tests/  163 tests + synthetic PDF fixture
+reports/         final-checklist, module reports, load test, eval results         tests/  175 tests + synthetic PDF fixture
 ```
 *Informational retrieval over statute text only; not legal advice.*

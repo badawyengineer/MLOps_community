@@ -1,7 +1,7 @@
 {
-  "_note": "CI regression gates for `prodml-eval --retriever hybrid-dense --k 1 --threshold 0.2`. Set just below the measured values (hit@1 0.94, MRR 0.94, correct-abstain 0.86, false-abstain 0.0) so noise doesn't fail CI but real regressions do. Tighten as the eval set grows.",
-  "hit_at_k": 0.88,
-  "mrr": 0.88,
-  "correct_abstain_rate": 0.80,
-  "max_false_abstain_rate": 0.10
+  "_note": "CI regression gates for `prodml-eval --retriever hybrid-dense --k 1 --threshold 0.3` on the 121-item eval set against the REAL 1,149-article Civil Code. Set just below the measured values (hit@1 0.598, MRR 0.598, correct-abstain 0.526, false-abstain 0.108) so noise doesn't fail CI but real regressions do. These are honest real-corpus numbers, far below the 0.94 seen on the 5-article sample; raise the gates only when retrieval genuinely improves (real multilingual embeddings are the expected upgrade).",
+  "hit_at_k": 0.55,
+  "mrr": 0.55,
+  "correct_abstain_rate": 0.45,
+  "max_false_abstain_rate": 0.15
 }

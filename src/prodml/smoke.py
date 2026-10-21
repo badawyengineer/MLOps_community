@@ -107,14 +107,14 @@ def _checks(client: Any, live: bool) -> list[tuple[str, Callable[[], str]]]:
         def corpus() -> str:
             from prodml.config import settings
             from prodml.corpus import load_corpus, sample_corpus
-            from prodml.validate_corpus import validate_corpus
+            from prodml.validate_corpus import load_known_issues, validate_corpus
 
             arts = (
                 load_corpus(settings.corpus_path)
                 if settings.corpus_path.exists()
                 else sample_corpus()
             )
-            res = validate_corpus(arts)
+            res = validate_corpus(arts, known_issues=load_known_issues())
             assert res.ok, res.errors
             return f"{len(arts)} articles pass validation"
 
@@ -132,7 +132,10 @@ def _checks(client: Any, live: bool) -> list[tuple[str, Callable[[], str]]]:
                 else sample_corpus()
             )
             r = evaluate(
-                build_retriever(settings.retriever).fit(arts), load_eval_set(), k=1, threshold=0.2
+                build_retriever(settings.retriever).fit(arts),
+                load_eval_set(),
+                k=1,
+                threshold=settings.min_confidence,
             )
             gates = json.loads(Path("data/eval/thresholds.json").read_text(encoding="utf-8"))
             failures = check_gates(r, gates)

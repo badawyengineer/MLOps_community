@@ -162,7 +162,13 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
 
     items, articles = load_eval_set(args.eval_set), _load_articles()
-    names = ["tfidf", "bm25", "hybrid"] if args.compare else [args.retriever]
+    # --compare tables the offline baselines AND the shipped retriever, so the gates (which guard
+    # the shipped one only) always have a row to check, even when it is not an offline baseline.
+    names = (
+        list(dict.fromkeys(["tfidf", "bm25", "hybrid", args.retriever]))
+        if args.compare
+        else [args.retriever]
+    )
     report: dict[str, Any] = {}
     for name in names:
         retriever = build_retriever(name).fit(articles)
@@ -191,7 +197,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.check:
         # Gates guard the retriever that ships; --compare rows are informational only.
         gates = json.loads(args.check.read_text(encoding="utf-8"))
-        shipped = args.retriever if args.retriever in report else names[0]
+        shipped = args.retriever
         failed = False
         for msg in check_gates(report[shipped], gates):
             print(f"GATE FAIL [{shipped}]: {msg}", file=sys.stderr)

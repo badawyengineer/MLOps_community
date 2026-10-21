@@ -67,7 +67,7 @@ def test_ask_batch_rejects_empty_list(client: TestClient) -> None:
 
 
 def test_ask_exposes_confidence_and_abstention(client: TestClient) -> None:
-    body = client.post("/ask", json={"question": "What is the penalty for drunk driving?"}).json()
+    body = client.post("/ask", json={"question": "كيف أطبخ الكشري؟"}).json()
     assert body["abstained"] is True and body["sources"] == []
     ok = client.post("/ask", json={"question": "Must contracts be performed in good faith?"}).json()
     assert ok["abstained"] is False and ok["confidence"] > 0
@@ -83,7 +83,7 @@ def test_metrics_endpoint_reports_abstentions_and_requests(client: TestClient) -
 
 def test_metadata_reports_retriever_and_threshold(client: TestClient) -> None:
     meta = client.get("/metadata").json()
-    assert meta["retriever"] == "hybrid-dense" and meta["min_confidence"] == 0.2
+    assert meta["retriever"] == "hybrid-dense" and meta["min_confidence"] == 0.3
 
 
 def test_ask_response_has_generation_and_guardrail_fields(client: TestClient) -> None:

@@ -1,221 +1,1179 @@
 {
- "_note": "BOOTSTRAP eval set (23 items) written against the 5-article sample corpus. 'answerable' is relative to the Civil Code; out-of-scope items stay unanswerable even after the full corpus is ingested. EXPAND to 50-100 items by hand against the real corpus before trusting any number from it.",
- "items": [
-  {
-   "id": "a1-1",
-   "question": "بماذا يحكم القاضي إذا لم يوجد نص تشريعي؟",
-   "lang": "ar",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    1
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a1-2",
-   "question": "ما هو ترتيب مصادر القانون عند غياب النص؟",
-   "lang": "ar",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    1
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a1-3",
-   "question": "هل يطبق القاضي العرف عند عدم وجود نص؟",
-   "lang": "ar",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    1
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a1-4",
-   "question": "What does a judge rely on when no legislation applies?",
-   "lang": "en",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    1
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a147-1",
-   "question": "هل يمكن لأحد الطرفين تعديل العقد منفردا؟",
-   "lang": "ar",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    147
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a147-2",
-   "question": "متى يجوز نقض العقد؟",
-   "lang": "ar",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    147
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a147-3",
-   "question": "ما معنى أن العقد شريعة المتعاقدين؟",
-   "lang": "ar",
-   "kind": "near-verbatim",
-   "relevant_articles": [
-    147
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a147-4",
-   "question": "Can a contract be changed without both parties agreeing?",
-   "lang": "en",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    147
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a148-1",
-   "question": "هل يجب تنفيذ العقد بحسن نية؟",
-   "lang": "ar",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    148
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a148-2",
-   "question": "كيف يجب تنفيذ العقد؟",
-   "lang": "ar",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    148
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a148-3",
-   "question": "ما التزام المتعاقد عند تنفيذ العقد وفقا لمقتضيات حسن النية؟",
-   "lang": "ar",
-   "kind": "near-verbatim",
-   "relevant_articles": [
-    148
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a148-4",
-   "question": "Must contracts be performed in good faith?",
-   "lang": "en",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    148
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a163-1",
-   "question": "من المسؤول عن تعويض الضرر الذي يلحق بالغير؟",
-   "lang": "ar",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    163
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a163-2",
-   "question": "ما حكم الخطأ الذي يسبب ضررا للغير؟",
-   "lang": "ar",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    163
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a163-3",
-   "question": "هل يلتزم من أحدث ضررا بالتعويض؟",
-   "lang": "ar",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    163
-   ],
-   "answerable": true
-  },
-  {
-   "id": "a163-4",
-   "question": "Who must pay compensation for damage caused by a fault?",
-   "lang": "en",
-   "kind": "paraphrase",
-   "relevant_articles": [
-    163
-   ],
-   "answerable": true
-  },
-  {
-   "id": "x-1",
-   "question": "ما عقوبة السرقة؟",
-   "lang": "ar",
-   "kind": "out-of-scope (Penal Code)",
-   "relevant_articles": [],
-   "answerable": false
-  },
-  {
-   "id": "x-2",
-   "question": "كيف أحسب ضريبة الدخل على راتبي؟",
-   "lang": "ar",
-   "kind": "out-of-scope (tax law)",
-   "relevant_articles": [],
-   "answerable": false
-  },
-  {
-   "id": "x-3",
-   "question": "ما شروط عقد الزواج وإجراءاته؟",
-   "lang": "ar",
-   "kind": "out-of-scope (personal status law)",
-   "relevant_articles": [],
-   "answerable": false
-  },
-  {
-   "id": "x-4",
-   "question": "كيف أسجل شركة مساهمة جديدة؟",
-   "lang": "ar",
-   "kind": "out-of-scope (company law)",
-   "relevant_articles": [],
-   "answerable": false
-  },
-  {
-   "id": "x-5",
-   "question": "ما هي عاصمة فرنسا؟",
-   "lang": "ar",
-   "kind": "off-topic",
-   "relevant_articles": [],
-   "answerable": false
-  },
-  {
-   "id": "x-6",
-   "question": "What is the penalty for drunk driving?",
-   "lang": "en",
-   "kind": "out-of-scope (traffic law)",
-   "relevant_articles": [],
-   "answerable": false
-  },
-  {
-   "id": "x-7",
-   "question": "كيف أطبخ الكشري؟",
-   "lang": "ar",
-   "kind": "off-topic",
-   "relevant_articles": [],
-   "answerable": false
-  }
- ]
+  "_note": "EXPANDED eval set (121 items: 102 answerable, 19 unanswerable; 67 Arabic / 54 English) written against the REAL 1,149-article corpus. The first 23 items are the original bootstrap set (still valid on the real corpus: articles 1, 147, 148, 163). The newer items were drafted by an AI assistant from the text of the articles they point at and spot-checked against that text; they have NOT been reviewed by a lawyer or a native Arabic legal reader - review and correct them by hand before treating any number from this set as a result. 'answerable' is relative to the Civil Code; out-of-scope items stay unanswerable.",
+  "items": [
+    {
+      "id": "a1-1",
+      "question": "بماذا يحكم القاضي إذا لم يوجد نص تشريعي؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        1
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a1-2",
+      "question": "ما هو ترتيب مصادر القانون عند غياب النص؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        1
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a1-3",
+      "question": "هل يطبق القاضي العرف عند عدم وجود نص؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        1
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a1-4",
+      "question": "What does a judge rely on when no legislation applies?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        1
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a147-1",
+      "question": "هل يمكن لأحد الطرفين تعديل العقد منفردا؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        147
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a147-2",
+      "question": "متى يجوز نقض العقد؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        147
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a147-3",
+      "question": "ما معنى أن العقد شريعة المتعاقدين؟",
+      "lang": "ar",
+      "kind": "near-verbatim",
+      "relevant_articles": [
+        147
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a147-4",
+      "question": "Can a contract be changed without both parties agreeing?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        147
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a148-1",
+      "question": "هل يجب تنفيذ العقد بحسن نية؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        148
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a148-2",
+      "question": "كيف يجب تنفيذ العقد؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        148
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a148-3",
+      "question": "ما التزام المتعاقد عند تنفيذ العقد وفقا لمقتضيات حسن النية؟",
+      "lang": "ar",
+      "kind": "near-verbatim",
+      "relevant_articles": [
+        148
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a148-4",
+      "question": "Must contracts be performed in good faith?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        148
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a163-1",
+      "question": "من المسؤول عن تعويض الضرر الذي يلحق بالغير؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        163
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a163-2",
+      "question": "ما حكم الخطأ الذي يسبب ضررا للغير؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        163
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a163-3",
+      "question": "هل يلتزم من أحدث ضررا بالتعويض؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        163
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a163-4",
+      "question": "Who must pay compensation for damage caused by a fault?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        163
+      ],
+      "answerable": true
+    },
+    {
+      "id": "x-1",
+      "question": "ما عقوبة السرقة؟",
+      "lang": "ar",
+      "kind": "out-of-scope (Penal Code)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-2",
+      "question": "كيف أحسب ضريبة الدخل على راتبي؟",
+      "lang": "ar",
+      "kind": "out-of-scope (tax law)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-3",
+      "question": "ما شروط عقد الزواج وإجراءاته؟",
+      "lang": "ar",
+      "kind": "out-of-scope (personal status law)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-4",
+      "question": "كيف أسجل شركة مساهمة جديدة؟",
+      "lang": "ar",
+      "kind": "out-of-scope (company law)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-5",
+      "question": "ما هي عاصمة فرنسا؟",
+      "lang": "ar",
+      "kind": "off-topic",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-6",
+      "question": "What is the penalty for drunk driving?",
+      "lang": "en",
+      "kind": "out-of-scope (traffic law)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-7",
+      "question": "كيف أطبخ الكشري؟",
+      "lang": "ar",
+      "kind": "off-topic",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "a3-1",
+      "question": "Which calendar is used to calculate periods of limitation?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        3
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a4-1",
+      "question": "هل يسأل من استعمل حقه استعمالا مشروعا عن الضرر الذي ينشأ عن ذلك؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        4
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a5-1",
+      "question": "When is the exercise of a right considered unlawful?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        5
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a44-1",
+      "question": "ما هي سن الرشد وما أثرها على الأهلية الكاملة لمباشرة الحقوق المدنية؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        44
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a52-1",
+      "question": "Which entities are recognised as juristic persons?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        52
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a81-1",
+      "question": "ما هي الأشياء التي تخرج عن التعامل بطبيعتها؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        81
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a89-1",
+      "question": "متى ينعقد العقد؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        89
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a90-1",
+      "question": "In what ways can an intention to contract be expressed?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        90
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a93-1",
+      "question": "ما التزام الموجب إذا حدد ميعادا للقبول؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        93
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a99-1",
+      "question": "When is a contract of sale by public auction concluded?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        99
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a100-1",
+      "question": "ما حدود القبول في عقود الإذعان؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        100
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a149-1",
+      "question": "Can a judge modify leonine conditions in a contract of adhesion?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        149
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a111-1",
+      "question": "What is the validity of contracts entered into by a minor who has discretion?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        111
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a120-1",
+      "question": "متى يجوز للمتعاقد طلب إبطال العقد بسبب الغلط؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        120,
+        121
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a125-1",
+      "question": "Can a contract be declared void for fraudulent misrepresentation?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        125
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a127-1",
+      "question": "هل يجوز إبطال العقد بسبب الإكراه؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        127
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a129-1",
+      "question": "What if one party's obligations are out of all proportion to the advantages he obtains from the contract?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        129
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a135-1",
+      "question": "ما حكم العقد إذا كان محله مخالفا للنظام العام أو للآداب؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        135
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a140-1",
+      "question": "Within what period must the right to avoid a contract be invoked?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        140
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a142-1",
+      "question": "ما أثر بطلان العقد أو إبطاله على المتعاقدين؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        142
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a150-1",
+      "question": "If the wording of a contract is clear, can the court deviate from it by interpretation?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        150
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a151-1",
+      "question": "لمصلحة من يفسر الشك في العقد؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        151
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a152-1",
+      "question": "Can a contract create obligations that bind third parties?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        152
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a157-1",
+      "question": "متى يجوز لأحد المتعاقدين فسخ العقد الملزم للجانبين إذا لم ينفذ الطرف الآخر التزامه؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        157
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a159-1",
+      "question": "What happens to the correlative obligation in a bilateral contract when performance becomes impossible?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        159
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a165-1",
+      "question": "متى لا يلتزم الشخص بالتعويض لأن الضرر نشأ عن سبب أجنبي؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        165
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a166-1",
+      "question": "Is a person liable for damage caused in legitimate defence of his person or property?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        166
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a169-1",
+      "question": "ما مسؤولية الأشخاص المتعددين الذين تسببوا في ضرر واحد؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        169
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a172-1",
+      "question": "What is the limitation period for an action for damages arising from an unlawful act?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        172
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a174-1",
+      "question": "هل يسأل المتبوع عن الضرر الذي يحدثه تابعه بعمله غير المشروع؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        174
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a176-1",
+      "question": "Who is liable for harm done by an animal?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        176
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a177-1",
+      "question": "من يسأل عن الضرر الناشئ عن انهيار البناء؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        177
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a178-1",
+      "question": "Who is responsible for damage caused by a machine or a thing requiring special care?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        178
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a181-1",
+      "question": "هل يجب رد ما دفع دون وجه حق؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        181,
+        182
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a187-1",
+      "question": "What is the limitation period for a claim to recover an undue payment?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        187
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a215-1",
+      "question": "ما حكم عدم تمكن المدين من التنفيذ العيني لالتزامه؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        215
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a216-1",
+      "question": "May the judge reduce damages if the creditor's own fault contributed to the loss?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        216
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a221-1",
+      "question": "من يقدر التعويض إذا لم يحدده العقد أو القانون؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        221
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a222-1",
+      "question": "Does compensation include moral prejudice?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        222
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a224-1",
+      "question": "هل يستحق التعويض الاتفاقي إذا أثبت المدين أن الدائن لم يلحقه ضرر؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        224
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a226-1",
+      "question": "What interest is payable on a sum of money whose amount is known when the claim is made?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        226
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a235-1",
+      "question": "هل يجوز للدائن أن يستعمل باسم مدينه حقوق هذا المدين؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        235
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a243-1",
+      "question": "What is the limitation period for an action to set aside an act of alienation by the debtor?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        243
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a246-1",
+      "question": "متى يجوز لمن عليه تسليم شيء أن يمتنع عن التنفيذ حتى يستوفي حقه؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        246
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a265-1",
+      "question": "When is an obligation conditional?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        265
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a279-1",
+      "question": "هل يفترض التضامن بين الدائنين أو بين المدينين؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        279
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a284-1",
+      "question": "When there is solidarity between debtors, does payment by one of them release the others?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        284
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a300-1",
+      "question": "متى يكون الالتزام غير قابل للانقسام؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        300
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a305-1",
+      "question": "When is an assignment of a right effective against the debtor or third parties?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        305
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a418-1",
+      "question": "ما تعريف عقد البيع؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        418
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a428-1",
+      "question": "What must the vendor do to transfer the right in the thing sold to the purchaser?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        428
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a448-1",
+      "question": "هل يضمن البائع العيوب التي جرى العرف على التسامح فيها؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        448
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a452-1",
+      "question": "What is the limitation period for an action on the warranty of the thing sold?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        452
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a453-1",
+      "question": "هل يجوز للمتعاقدين تعديل أحكام الضمان بالزيادة أو الإنقاص أو الإسقاط؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        453
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a463-1",
+      "question": "Where and when must the purchaser take delivery of the thing sold if nothing was agreed?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        463
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a488-1",
+      "question": "ما الشكل الذي يجب أن تتم به الهبة؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        488
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a503-1",
+      "question": "What are the effects of a revoked gift on the donee?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        503
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a538-1",
+      "question": "ما تعريف القرض؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        538
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a553-1",
+      "question": "What is the effect of a compromise on the disputes it covers?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        553
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a558-1",
+      "question": "ما هو عقد الإيجار؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        558
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a583-1",
+      "question": "What care must the lessee exercise in using and preserving the leased property?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        583
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a593-1",
+      "question": "هل يجوز للمستأجر أن يتنازل عن الإيجار أو يؤجر من الباطن؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        593
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a608-1",
+      "question": "Can a party end a fixed-term lease because of serious unforeseen circumstances?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        608
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a653-1",
+      "question": "هل يجوز الاتفاق على إعفاء المهندس والمقاول من الضمان؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        653
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a663-1",
+      "question": "May the master terminate a contract for work before the works are completed?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        663
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a698-1",
+      "question": "ما مدة تقادم الدعاوى الناشئة عن عقد العمل؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        698
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a703-1",
+      "question": "Can a mandatary exceed the limits of the mandate?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        703
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a718-1",
+      "question": "ما هو عقد الوديعة؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        718
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a773-1",
+      "question": "Must a suretyship be established in writing?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        773
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a793-1",
+      "question": "هل يجوز للكفيل المتضامن أن يطلب التجريد؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        793
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a802-1",
+      "question": "What rights does the owner of a thing have?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        802
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a820-1",
+      "question": "ما هي المسافة التي يجب أن تفصل المطل المائل عن ملك الجار؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        820
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a826-1",
+      "question": "Can a co-owner alienate his share in a property held in common?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        826
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a862-1",
+      "question": "هل يجوز لملاك طبقات البناء أو شققه أن يكونوا اتحادا فيما بينهم؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        862
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a874-1",
+      "question": "Who owns uncultivated land that has no owner?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        874
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a934-1",
+      "question": "متى تنتقل ملكية العقار بالنسبة للمتعاقدين وبالنسبة للغير؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        934
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a958-1",
+      "question": "Within what period may the possessor of an immovable who lost possession recover it?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        958
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a964-1",
+      "question": "هل يفترض أن حائز الحق هو صاحبه؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        964
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a970-1",
+      "question": "After how many years is wakf property acquired by prescription?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        970
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a976-1",
+      "question": "متى يكتسب حائز المنقول ملكيته بسند صحيح؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        976
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a994-1",
+      "question": "In which cases is a usufruct extinguished?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        994
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a1030-1",
+      "question": "ما تعريف الرهن الرسمي؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        1030
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a1048-1",
+      "question": "What may the mortgagee do if the mortgaged property perishes through the mortgagor's fault?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        1048
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a1096-1",
+      "question": "ما تعريف رهن الحيازة؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        1096
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a1132-1",
+      "question": "To which property do general privileges extend?",
+      "lang": "en",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        1132
+      ],
+      "answerable": true
+    },
+    {
+      "id": "a1144-1",
+      "question": "ما الدين الذي يضمنه امتياز أصحاب الفنادق على أمتعة المسافر؟",
+      "lang": "ar",
+      "kind": "paraphrase",
+      "relevant_articles": [
+        1144
+      ],
+      "answerable": true
+    },
+    {
+      "id": "x-8",
+      "question": "What is the punishment for murder?",
+      "lang": "en",
+      "kind": "out-of-scope (Penal Code)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-9",
+      "question": "ما نفقة الزوجة بعد الطلاق؟",
+      "lang": "ar",
+      "kind": "out-of-scope (personal status law)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-10",
+      "question": "How do I file my annual income tax return?",
+      "lang": "en",
+      "kind": "out-of-scope (tax law)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-11",
+      "question": "ما شروط الحصول على رخصة قيادة سيارة؟",
+      "lang": "ar",
+      "kind": "out-of-scope (traffic law)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-12",
+      "question": "Who won the football World Cup in 2018?",
+      "lang": "en",
+      "kind": "off-topic",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-13",
+      "question": "ما طريقة تحضير المحشي؟",
+      "lang": "ar",
+      "kind": "off-topic",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-14",
+      "question": "How do I register a trademark?",
+      "lang": "en",
+      "kind": "out-of-scope (IP law)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-15",
+      "question": "ما عقوبة تزوير المحررات الرسمية؟",
+      "lang": "ar",
+      "kind": "out-of-scope (Penal Code)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-16",
+      "question": "What documents do I need to renew an Egyptian passport?",
+      "lang": "en",
+      "kind": "out-of-scope (administrative law)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-17",
+      "question": "كيف أتقدم بطلب للحصول على الجنسية المصرية؟",
+      "lang": "ar",
+      "kind": "out-of-scope (nationality law)",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-18",
+      "question": "What is the weather like in Cairo in July?",
+      "lang": "en",
+      "kind": "off-topic",
+      "relevant_articles": [],
+      "answerable": false
+    },
+    {
+      "id": "x-19",
+      "question": "كيف أستأنف حكما جنائيا؟",
+      "lang": "ar",
+      "kind": "out-of-scope (criminal procedure)",
+      "relevant_articles": [],
+      "answerable": false
+    }
+  ]
 }

@@ -1,16 +1,16 @@
 # Reproducible pipeline: `dvc repro` rebuilds only the stages whose inputs changed.
 #
-# TO USE THE REAL CORPUS (handbook: the PDF and JSON must be DVC-tracked):
-#   1. put the PDF at data/raw/egyptian_civil_code.pdf
-#   2. dvc add data/raw/egyptian_civil_code.pdf            (tracks the PDF, git-ignores it)
-#   3. python -m prodml.ingest --dump 3                    (READ the columns before trusting them)
-#   4. in `build_corpus` below: swap `cmd` for the `prodml-ingest` line and add the PDF to `deps`
-#   5. dvc remote add -d storage <s3-or-gdrive-or-local-path> && dvc push
-# After that, anyone can `git clone && dvc pull && dvc repro` and get the identical corpus + index.
+# The source PDF is DVC-tracked (data/raw/egyptian_civil_code.pdf.dvc is in Git, the PDF itself is
+# not). To fetch it on a fresh clone you need a DVC remote with the file pushed to it:
+#   dvc remote add -d storage <s3-or-gdrive-or-local-path> && dvc push      (once, by the owner)
+#   git clone ... && dvc pull && dvc repro                                  (everyone else)
+# Without a remote, put the PDF at data/raw/egyptian_civil_code.pdf yourself and run `dvc repro`.
+# Inspect the extracted columns first with `python -m prodml.ingest --dump 3` (layouts differ).
 stages:
   build_corpus:
-    cmd: python -m prodml.corpus            # -> swap for: python -m prodml.ingest   (see above)
+    cmd: python -m prodml.ingest
     deps:
+      - data/raw/egyptian_civil_code.pdf
       - src/prodml/corpus.py
       - src/prodml/ingest.py
     outs:
@@ -18,10 +18,11 @@ stages:
           cache: false                      # small text file: keep it in Git too
 
   validate_corpus:
-    cmd: python -m prodml.validate_corpus   # add --strict once the full corpus is ingested
+    cmd: python -m prodml.validate_corpus --strict
     deps:
       - src/prodml/validate_corpus.py
       - data/processed/articles.json
+      - data/processed/known_issues.json
 
   build_index:
     cmd: python -m prodml.indexing
@@ -36,7 +37,7 @@ stages:
       - data/index                          # binary vectors: DVC-cached, not in Git
 
   evaluate:
-    cmd: python -m prodml.evaluation --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.2 --out reports/eval/latest.json --check data/eval/thresholds.json
+    cmd: python -m prodml.evaluation --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.3 --out reports/eval/latest.json --check data/eval/thresholds.json
     deps:
       - src/prodml/retriever.py
       - src/prodml/evaluation.py

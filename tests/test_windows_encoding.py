@@ -76,7 +76,7 @@ def test_eval_gate_reads_thresholds_under_a_legacy_encoding() -> None:
         "--k",
         "1",
         "--threshold",
-        "0.2",
+        "0.3",
         "--check",
         "data/eval/thresholds.json",
     )

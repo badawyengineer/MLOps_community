@@ -97,8 +97,8 @@ def test_cli_compare_with_sweep(capsys) -> None:
 def test_gate_applies_only_to_shipped_retriever_in_compare_mode(tmp_path) -> None:
     gates = tmp_path / "g.json"
     gates.write_text(
-        json.dumps({"mrr": 0.9}), encoding="utf-8"
-    )  # hybrid clears this, bm25 does not
+        json.dumps({"mrr": 0.6}), encoding="utf-8"
+    )  # on the real corpus hybrid clears this (0.67), tfidf does not (0.54)
     assert (
         ev.main(
             [
@@ -120,7 +120,7 @@ def test_gate_applies_only_to_shipped_retriever_in_compare_mode(tmp_path) -> Non
             [
                 "--compare",
                 "--retriever",
-                "bm25",
+                "tfidf",
                 "--k",
                 "1",
                 "--threshold",
@@ -131,3 +131,30 @@ def test_gate_applies_only_to_shipped_retriever_in_compare_mode(tmp_path) -> Non
         )
         == 1
     )
+
+
+def test_gate_targets_the_shipped_retriever_even_if_it_is_not_an_offline_baseline(tmp_path) -> None:
+    """Regression: with --compare and a shipped retriever outside {tfidf, bm25, hybrid}, the gate
+    used to fall back to the first baseline (tfidf) and fail CI for the wrong model."""
+    gates = tmp_path / "g.json"
+    gates.write_text(
+        json.dumps({"mrr": 0.5}), encoding="utf-8"
+    )  # tfidf is below, hybrid-dense above
+    out = tmp_path / "r.json"
+    code = ev.main(
+        [
+            "--compare",
+            "--retriever",
+            "hybrid-dense",
+            "--k",
+            "1",
+            "--threshold",
+            "0.3",
+            "--check",
+            str(gates),
+            "--out",
+            str(out),
+        ]
+    )
+    assert code == 0
+    assert "hybrid-dense" in json.loads(out.read_text(encoding="utf-8"))
