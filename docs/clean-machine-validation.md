@@ -24,9 +24,9 @@ were not tested. Timings are from this small machine while no other job ran unle
 | 11 | Invalid configuration | `PRODML_GENERATION_BACKEND=api` without a model; bad retriever/port; partial Langfuse; non-numeric port | each stops startup with one readable message naming the variable; no traceback; secret values never printed |
 | 12 | Secret-leak canary | canary values in `PRODML_LLM_API_KEY`, Langfuse keys, `OPENAI_API_KEY`, then `/ask`, `/metadata`, `/metrics`, `/openapi.json`, API log, `prodml-doctor`, `repr(settings)` | **0 occurrences** in all seven outputs (one leak of the Langfuse *public* key in `repr` was found and fixed) |
 | 13 | MLflow | `prodml-eval ... --mlflow`; `prodml-experiments --plot ...` | experiment + run + metrics persisted in `mlflow.db`; 12-run grid in **68 s**; `legal-qa-retriever` registered with alias `@champion`; `mlruns/` written (1.3 MB) |
-| 14 | DVC (clone-equivalent repo) | `dvc repro` | **FAILS** without the PDF: `missing data 'source': data/raw/egyptian_civil_code.pdf` |
-| 15 | DVC pull | `dvc pull` | **FAILS**: no remote configured |
-| 16 | DVC stages individually | `dvc repro --single-item validate_corpus` / `build_index` / `evaluate` | all three exit 0 |
+| 14 | DVC on a clone **before** the in-repo remote existed | `dvc repro` / `dvc pull` | Failed: `missing data 'source': data/raw/egyptian_civil_code.pdf`; no remote (this is what an evaluator would have hit) |
+| 15 | Fix: in-repo DVC remote `dvc-store/` (3.4 MB: PDF + index objects) | `git clone` of the committed repo, then `dvc pull` | **exit 0**: PDF fetched, md5 `5086ef5f...` equals the pointer |
+| 16 | Full pipeline from the PDF in that fresh clone | `dvc repro --force` (build_corpus -> validate_corpus -> build_index -> evaluate) | **all 4 stages run, 0 gate failures, `git status` clean afterwards: the rebuilt `articles.json`, `dvc.lock` and `reports/eval/latest.json` are byte-identical to the committed ones** (the pipeline is deterministic) |
 | 17 | Alert receiver | `prodml-alert-sink` + `curl -X POST /alerts` | HTTP 200, `[FIRING] FaithfulnessLow (critical) ...` printed, JSONL line written; `--fire-test-alert` against nothing prints a clear error, exit 1 |
 | 18 | Full test suite | `pytest` (clean venv, all extras) | **206 passed, 0 failed, 0 skipped**, coverage 88.9% (gate 70%), 6 min 26 s; 8 third-party deprecation warnings |
 | 19 | Lint / format | `ruff check src tests && black --check src tests` | clean |
@@ -37,12 +37,11 @@ were not tested. Timings are from this small machine while no other job ran unle
 
 | Item | Blocker | Next action |
 |---|---|---|
-| Docker image build, `docker compose`, Prometheus / Grafana / Alertmanager, canary | No Docker in the audit environment | Run `docker compose --env-file .env -f docker/docker-compose.yml up --build` and `prodml-smoke --url http://localhost:8000`; the author's CI job builds and smoke-tests the image |
+| Docker image build, `docker compose`, Prometheus / Grafana / Alertmanager, canary | No Docker in the audit environment. **Simulated instead**: a core-only non-editable install, only the files the `COPY` lines bring, the `RUN validate_corpus` + `indexing` steps, then the `CMD` and the `HEALTHCHECK` command: all passed (`/health` 200, Article 148 cited). Not a real `docker build` (base image, `USER appuser`, layer caching untested) | Run `docker compose --env-file .env -f docker/docker-compose.yml up --build` and `prodml-smoke --url http://localhost:8000`; the author's CI job builds and smoke-tests the image |
 | Alertmanager -> `prodml-alert-sink` delivery | Needs the Docker stack | `docs/evidence-runbook.md` Part B |
-| GitHub Actions run on the final code | Changes are uncommitted/unpushed here | Push, then read the Actions tab (the first run on `main` failed and was never read) |
+| GitHub Actions run on the final code | Committed locally (`86fa429`) but not pushed (no credentials here). Every CI step was replicated locally: lint, tests, retrieval gate, **faithfulness gate (exit 0, proxy 1.0 over 102 questions)**, index rebuild, smoke | Push, then read the Actions tab (the first run on `main` failed and was never read) |
 | Real LLM endpoint, real Langfuse server, real RAGAS, real embedding models | No GPU, no keys, no Hugging Face access | `docs/credentials-and-services.md`, `docs/real-embeddings-and-gpu-runbook.md` |
 | GPU notebook (vLLM, AWQ, self-quantization script) | No GPU | Kaggle runbook |
-| Rebuilding the corpus from the PDF in the clean copy | The PDF is not in Git and there is no DVC remote | Author: add a remote and `dvc push`, or supply the PDF |
 | macOS / Windows / Python 3.10 | Not available | - |
 
 ## Defects found by this audit and fixed

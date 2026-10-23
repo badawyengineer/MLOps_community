@@ -5,7 +5,7 @@
 Ask a question in Arabic or English; get an answer **cited to Civil Code article numbers**, with a
 confidence score - or a refusal when the corpus doesn't cover the question.
 
-> **Status:** 21 of the 34 handbook checklist items are done, 12 partial, 1 not done (real RAGAS needs a
+> **Status:** 22 of the 34 handbook checklist items are done, 11 partial, 1 not done (real RAGAS needs a
 > judge-LLM key). Full list with evidence: **[reports/final-checklist.md](reports/final-checklist.md)**. The corpus is the **real
 > Egyptian Civil Code (1,149 articles, from the bilingual PDF)**. Retrieval numbers are measured on a **121-question eval
 > set that an AI assistant drafted from the article texts and that has not been reviewed by a human expert**; the GPU-run

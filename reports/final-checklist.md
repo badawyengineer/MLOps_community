@@ -1,12 +1,12 @@
 # Final checklist - Project 2 (LLM / RAG, Arabic Legal Q&A)
 
 Checked item-by-item against the *Completion checklists* in the MLOps Practitioner handbook.
-**34 items: 21 done, 12 partial, 1 not done.** "Partial" always says what is missing.
+**34 items: 22 done, 11 partial, 1 not done.** "Partial" always says what is missing.
 Every "done" is backed by a test, a command you can run, or a file in this repo.
 
 **Verify the done items yourself:** `pip install -e ".[dev,tracking,fixtures,pdf]" && prodml-smoke && pytest`
 
-## Code, packaging, tracking, versioning (11 done / 5 partial / 0 not done)
+## Code, packaging, tracking, versioning (12 done / 4 partial / 0 not done)
 | Status | Handbook item | Evidence / what is missing |
 |---|---|---|
 | ✅ done | src/ layout with pyproject.toml; `pip install -e .` works | pyproject.toml, src/prodml; CI installs it |
@@ -21,7 +21,7 @@ Every "done" is backed by a test, a command you can run, or a file in this repo.
 | ⚠️ partial | MLflow logs chunk_size, overlap, embedding_model, faithfulness | Logged, but the faithfulness metric is the lexical PROXY (`faithfulness_proxy`), not RAGAS |
 | ⚠️ partial | >=5 runs compared; MLflow screenshot in /reports/ | 12 runs logged + a chart generated from them (reports/mlflow_runs_comparison.png); `prodml-experiments` re-run from a clean copy and registers `@champion`. The chart is NOT a UI screenshot: take `reports/screenshots/mlflow-runs.png` yourself (docs/evidence-runbook.md, Part A) |
 | ✅ done | Best chunking config registered in the MLflow Registry | `legal-qa-retriever@champion`; loaded back and predicted in a test |
-| ⚠️ partial | PDF and JSON both DVC-tracked; `dvc pull` fetches, `dvc repro` rebuilds JSON from PDF | PDF tracked (`data/raw/egyptian_civil_code.pdf.dvc`) and `dvc repro` rebuilds JSON from the PDF, validates, indexes and evaluates (verified). **Missing: a DVC remote**, so `dvc pull` cannot fetch the PDF yet - `dvc remote add -d storage <url> && dvc push` |
+| ✅ done | PDF and JSON both DVC-tracked; `dvc pull` fetches, `dvc repro` rebuilds JSON from PDF | PDF tracked (`data/raw/egyptian_civil_code.pdf.dvc`); default remote is the in-repo directory `dvc-store/` (no credentials). Verified in a fresh `git clone`: `dvc pull` fetches the PDF (md5 matches) and `dvc repro --force` rebuilds corpus -> validation -> index -> gated evaluation with files byte-identical to the committed ones |
 | ✅ done | `dvc repro` re-indexes the corpus reproducibly | verified: 4 stages run, second run skips |
 | ⚠️ partial | GitHub Actions: lint -> test -> rebuild index -> push Docker image | CI ran green on PR #2 (lint, tests, retrieval + faithfulness gates, smoke, Docker build/run). An explicit `prodml-index` step now makes the 'rebuild index' stage visible, and a scheduled `monitor.yml` runs the quality check weekly (RAGAS only if `OPENAI_API_KEY` is set). Every CI command was re-run locally from the repo and passes (lint, 207 tests, both gates, smoke). NOT yet verified on GitHub: the latest run on `main` (the first one, #2, failed in 15 s - its log was never read) and the Docker Hub `publish` job (needs DOCKERHUB_USERNAME / DOCKERHUB_TOKEN; it skips cleanly without them) |
 | ⚠️ partial | CI fails if RAGAS faithfulness < 0.75 on a 20-question set | Gate exists but uses the lexical proxy over the 16 answerable eval questions. A real RAGAS gate needs a judge-LLM key and a 20-question set |
