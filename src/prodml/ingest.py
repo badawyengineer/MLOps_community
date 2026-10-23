@@ -489,6 +489,37 @@ def extract_columns(
     return ar_lines, en_lines
 
 
+def apply_manual_fixes(
+    articles: list[Article], fixes: list[dict]
+) -> tuple[list[Article], list[str]]:
+    """Apply documented corrections for defects in the SOURCE PDF (``data/manual_fixes.json``).
+
+    A fix replaces ``field`` of one article with ``new`` only when the extracted value still equals
+    ``expect_current``; otherwise the extractor or the PDF changed since the fix was written and it
+    is reported as stale and NOT applied. Returns (articles, messages)."""
+    by_number = {a["article_number"]: a for a in articles}
+    messages: list[str] = []
+    for fix in fixes:
+        n, field_name = fix["article_number"], fix["field"]
+        art = by_number.get(n)
+        if art is None or art.get(field_name) != fix["expect_current"]:
+            messages.append(
+                f"manual fix for article {n} {field_name} is STALE (extracted text differs): not applied"
+            )
+            continue
+        art[field_name] = fix["new"]  # type: ignore[literal-required]
+        messages.append(f"manual fix applied: article {n} {field_name}")
+    return articles, messages
+
+
+def load_manual_fixes(path: Path) -> list[dict]:
+    import json
+
+    if not path.exists():
+        return []
+    return list(json.loads(path.read_text(encoding="utf-8")).get("fixes", []))
+
+
 def build_articles_from_pdf(
     pdf_path: Path,
     repealed_ranges: list[tuple[int, int]] | None = None,
@@ -508,7 +539,14 @@ def build_articles_from_pdf(
     ranges = merge_ranges((repealed_ranges or []) + announced)
     if announced:
         logger.info("Repeal notes found in the PDF: %s", merge_ranges(announced))
-    return fill_repealed_ranges(drop_empty_in_ranges(articles, ranges), ranges)
+    articles = fill_repealed_ranges(drop_empty_in_ranges(articles, ranges), ranges)
+    # data/raw/<pdf> -> data/manual_fixes.json (documented corrections for defects in the source PDF)
+    articles, fix_msgs = apply_manual_fixes(
+        articles, load_manual_fixes(pdf_path.parent.parent / "manual_fixes.json")
+    )
+    for m in fix_msgs:
+        logger.warning(m) if "STALE" in m else logger.info(m)
+    return articles
 
 
 def main(argv: list[str] | None = None) -> int:

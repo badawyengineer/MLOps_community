@@ -1,12 +1,23 @@
 # Changelog (by handbook session)
 
+## Evaluation readiness (clean-machine audit)
+- **Missing tools implemented**: `prodml-mock-llm` and `prodml-alert-sink` were documented (README, runbooks, demo compose, notebook dry run) but were not in the repository or its Git history; they are now `src/prodml/mock_llm.py` and `alert_sink.py`, re-created from the documented interface, with tests. `prodml-evalgen` is still **not implemented** and its README row was removed. If you have the original versions locally, compare them before merging.
+- New `prodml-doctor` (config / corpus / optional-service check; `--online` probes configured endpoints; never prints secrets).
+- Config: `.env` is now also loaded for unprefixed variables (`MLFLOW_TRACKING_URI`, `OPENAI_API_KEY`); values are validated at startup with messages naming the variable; secret fields are hidden from `repr`; `safe_summary()` for diagnostics.
+- New `.env.example` (every variable), hardened `.gitignore` (`.env.*`, keys, `kaggle.json`, `.dvc/config.local`), `docs/credentials-and-services.md`, `docs/clean-machine-validation.md`, evaluator-oriented README.
+- Secret scan of the working tree and all 36 commits: no matches.
+
 ## Unreleased - real Civil Code corpus
 - Ingest the real bilingual PDF (1,149 articles). `ingest.py` handles visual-order Arabic with lam-alef ligature glyphs,
   bold-font headings (Book/Chapter/Section/topic), the promulgation-law preamble, in-text repeal notes (54-80, 389-417),
   cross-reference lines, inline markers and bold-body glitches; `is_repealed` no longer fires on long articles that merely
   mention "repealed" (Article 2).
 - DVC tracks the PDF; `dvc repro` rebuilds the corpus from it, validates `--strict`, indexes and evaluates.
-- `validate_corpus`: `known_issues.json` documents source-PDF defects (Article 1022 has no Arabic text).
+- `validate_corpus`: `known_issues.json` can document source-PDF defects. `data/manual_fixes.json` + `apply_manual_fixes` repair
+  Articles 1021/1022 reproducibly (applied only while the extracted text still matches; provenance recorded).
+- Embeddings: e5-style `passage: ` / `query: ` prefixes (`encode_queries`); `scripts/retune_gates.py` re-derives CI gates.
+- GPU: new `scripts/quantize_awq.py` (AutoAWQ calibrated on corpus text; the notebook referenced it but it did not exist);
+  notebook defaults to `QUANT_OPTION = "own"` and can clone the public repo anonymously; runbook in `docs/`.
 - Fix: `prodml-eval --compare` now tables the shipped retriever and gates it (it used to gate `tfidf` when the shipped
   retriever was not an offline baseline, which would have failed CI).
 - Eval set expanded from 23 to 121 items (AI-drafted, unreviewed); abstention threshold 0.2 -> 0.3; CI gates re-measured

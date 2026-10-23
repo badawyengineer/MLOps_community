@@ -3,6 +3,10 @@ stages:
   build_corpus:
     cmd: python -m prodml.ingest
     deps:
+    - path: data/manual_fixes.json
+      hash: md5
+      md5: 9db6b31e0ce10e2665df31b74c106484
+      size: 3341
     - path: data/raw/egyptian_civil_code.pdf
       hash: md5
       md5: 5086ef5f16f15d856278db943e58e948
@@ -13,24 +17,24 @@ stages:
       size: 11579
     - path: src/prodml/ingest.py
       hash: md5
-      md5: 90b24edae189469f7d58ad6aa4918eae
-      size: 24407
+      md5: ce93a3eb759eebb8fcbf7dbbd8ef8d08
+      size: 26042
     outs:
     - path: data/processed/articles.json
       hash: md5
-      md5: 7c7787f524454bca5c35897db597f51e
-      size: 1296416
+      md5: 500d1fa6b1bd5cd4d5ca6d92401c001d
+      size: 1296611
   validate_corpus:
     cmd: python -m prodml.validate_corpus --strict
     deps:
     - path: data/processed/articles.json
       hash: md5
-      md5: 7c7787f524454bca5c35897db597f51e
-      size: 1296416
+      md5: 500d1fa6b1bd5cd4d5ca6d92401c001d
+      size: 1296611
     - path: data/processed/known_issues.json
       hash: md5
-      md5: 38fd9f62132bc5c6c3fb240f2091ff23
-      size: 290
+      md5: 8a80554c91d9fca8acb82f023de02f11
+      size: 3
     - path: src/prodml/validate_corpus.py
       hash: md5
       md5: dc54b66581b3819cf678e285079bd347
@@ -50,8 +54,8 @@ stages:
       size: 624
     - path: data/processed/articles.json
       hash: md5
-      md5: 7c7787f524454bca5c35897db597f51e
-      size: 1296416
+      md5: 500d1fa6b1bd5cd4d5ca6d92401c001d
+      size: 1296611
     - path: src/prodml/corpus.py
       hash: md5
       md5: 71ae4b26ec256fe6c7884acdd895f3d5
@@ -62,36 +66,36 @@ stages:
       size: 8312
     - path: src/prodml/retriever.py
       hash: md5
-      md5: 805736637012501259ec6ba90e0b467e
-      size: 15764
+      md5: d304d0ebecd1424743bcc44ad3f5c9ce
+      size: 15888
     outs:
     - path: reports/eval/latest.json
       hash: md5
-      md5: cf8fbedd53f98f4fe68e80231e76dfd2
-      size: 78770
+      md5: 5520cbe04eee82eb614be8e8c359cab8
+      size: 78753
   build_index:
     cmd: python -m prodml.indexing
     deps:
     - path: data/processed/articles.json
       hash: md5
-      md5: 7c7787f524454bca5c35897db597f51e
-      size: 1296416
+      md5: 500d1fa6b1bd5cd4d5ca6d92401c001d
+      size: 1296611
     - path: src/prodml/chunking.py
       hash: md5
       md5: 0629d1e4fa7ee4da6cd00bb4248c9e87
       size: 2635
     - path: src/prodml/embedders.py
       hash: md5
-      md5: e5c7ab53310a656e8f4d2b4763edbeee
-      size: 3742
+      md5: 5493dcc9cb86da0a27996fc502fce5f7
+      size: 4700
     - path: src/prodml/indexing.py
       hash: md5
       md5: c919dcf863b73f4af1cde0763420630e
       size: 1891
     - path: src/prodml/retriever.py
       hash: md5
-      md5: 805736637012501259ec6ba90e0b467e
-      size: 15764
+      md5: d304d0ebecd1424743bcc44ad3f5c9ce
+      size: 15888
     - path: src/prodml/vectorstore.py
       hash: md5
       md5: 0373b19fe0ab4e40709cf605c81ab23e
@@ -99,6 +103,6 @@ stages:
     outs:
     - path: data/index
       hash: md5
-      md5: babf6cb21f6c0776ffc63f87d5d3ec1c.dir
-      size: 914067
+      md5: 383a7a32058a8e5e0598a0adf8fbbc79.dir
+      size: 914104
       nfiles: 2

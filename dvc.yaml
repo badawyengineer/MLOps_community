@@ -1,16 +1,17 @@
 # Reproducible pipeline: `dvc repro` rebuilds only the stages whose inputs changed.
 #
-# The source PDF is DVC-tracked (data/raw/egyptian_civil_code.pdf.dvc is in Git, the PDF itself is
-# not). To fetch it on a fresh clone you need a DVC remote with the file pushed to it:
-#   dvc remote add -d storage <s3-or-gdrive-or-local-path> && dvc push      (once, by the owner)
-#   git clone ... && dvc pull && dvc repro                                  (everyone else)
-# Without a remote, put the PDF at data/raw/egyptian_civil_code.pdf yourself and run `dvc repro`.
+# The source PDF is DVC-tracked: data/raw/egyptian_civil_code.pdf.dvc is in Git, the PDF is not. The default DVC
+# remote is a plain directory INSIDE this repository (dvc-store/, see .dvc/config), so on a fresh clone
+#   dvc pull && dvc repro
+# works with no account and no credentials. To use shared cloud storage instead:
+#   dvc remote add -d storage s3://... (or gdrive://...) --force && dvc push
 # Inspect the extracted columns first with `python -m prodml.ingest --dump 3` (layouts differ).
 stages:
   build_corpus:
     cmd: python -m prodml.ingest
     deps:
       - data/raw/egyptian_civil_code.pdf
+      - data/manual_fixes.json
       - src/prodml/corpus.py
       - src/prodml/ingest.py
     outs:

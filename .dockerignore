@@ -16,3 +16,4 @@ mlruns/
 mlflow.db
 .env
 .dvc/tmp
+dvc-store/

@@ -3,6 +3,8 @@ __pycache__/
 *.egg-info/
 .venv/
 .env
+.env.*
+!.env.example
 .pytest_cache/
 .ruff_cache/
 .coverage
@@ -23,3 +25,18 @@ mlruns/
 .venv/
 .dvc/tmp
 data/index
+
+# --- secrets and local credentials: never commit ---
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+credentials*.json
+service-account*.json
+kaggle.json
+.kaggle/
+.dvc/config.local
+.dvc/cache
+secrets/
+*.secret

@@ -70,26 +70,45 @@ class LsaEmbedder:
         return _l2(self._svd.transform(self._tfidf.transform(list(texts))))
 
 
-class SentenceTransformerEmbedder:  # pragma: no cover - needs the optional extra + a model download
+def _prefixes_for(model_name: str) -> tuple[str, str]:
+    """(document prefix, query prefix). The e5 family was trained with "passage: " / "query: "
+    markers and loses accuracy without them; bge-m3, MiniLM, LaBSE and friends need none."""
+    if "e5" in model_name.lower().split("/")[-1]:
+        return "passage: ", "query: "
+    return "", ""
+
+
+class SentenceTransformerEmbedder:
+    """Hugging Face sentence-transformers backend (optional extra, needs a model download).
+
+    ``encode`` embeds DOCUMENTS (article text); ``encode_queries`` embeds user questions. They
+    differ only for models that want asymmetric prefixes (see ``_prefixes_for``)."""
+
     stateless = True
 
     def __init__(self, model_name: str) -> None:
         self.name = model_name
         self._model = None
+        self.doc_prefix, self.query_prefix = _prefixes_for(model_name)
 
     def fit(self, texts: Sequence[str]) -> SentenceTransformerEmbedder:
         return self
 
-    def encode(self, texts: Sequence[str]) -> np.ndarray:
-        if self._model is None:
+    def _encode(self, texts: Sequence[str], prefix: str) -> np.ndarray:
+        if self._model is None:  # pragma: no cover - needs the optional extra + a model download
             try:
                 from sentence_transformers import SentenceTransformer
             except ImportError as exc:
                 raise RuntimeError('pip install -e ".[embeddings]"') from exc
             self._model = SentenceTransformer(self.name)
-        return _l2(
-            np.asarray(self._model.encode(list(texts), normalize_embeddings=True), dtype=float)
-        )
+        batch = [prefix + t for t in texts]
+        return _l2(np.asarray(self._model.encode(batch, normalize_embeddings=True), dtype=float))
+
+    def encode(self, texts: Sequence[str]) -> np.ndarray:
+        return self._encode(texts, self.doc_prefix)
+
+    def encode_queries(self, texts: Sequence[str]) -> np.ndarray:
+        return self._encode(texts, self.query_prefix)
 
 
 def build_embedder(spec: str) -> Embedder:

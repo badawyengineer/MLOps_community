@@ -358,7 +358,10 @@ class VectorRetriever:
     def query(self, question: str, top_k: int = 3) -> list[ScoredArticle]:
         if self.store is None:
             raise RuntimeError("VectorRetriever.fit() or load() must be called before query().")
-        q = self.embedder.encode([normalize_for_search(question)])[0]
+        encode_q = getattr(
+            self.embedder, "encode_queries", self.embedder.encode
+        )  # e5-style asymmetric prefixes
+        q = encode_q([normalize_for_search(question)])[0]
         best: dict[int, float] = {}
         for payload, score in self.store.search(q, k=max(top_k * 5, 20)):
             n = payload["article_number"]

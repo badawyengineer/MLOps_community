@@ -55,6 +55,9 @@ prodml-validate = "prodml.validate_corpus:main"
 prodml-monitor = "prodml.monitor:main"
 prodml-experiments = "prodml.experiments:main"
 prodml-compare-llms = "prodml.compare_llms:main"
+prodml-mock-llm = "prodml.mock_llm:main"
+prodml-alert-sink = "prodml.alert_sink:main"
+prodml-doctor = "prodml.doctor:main"
 
 [build-system]
 requires = ["setuptools>=68"]

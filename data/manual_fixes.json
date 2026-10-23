@@ -1,0 +1,21 @@
+{
+  "_note": "Manual corrections for DEFECTS IN THE SOURCE PDF, applied by prodml.ingest after extraction so `dvc repro` reproduces them. A fix is applied only if the extracted text still equals `expect_current` (otherwise the extractor or PDF changed and the fix is reported as stale, never forced).",
+  "fixes": [
+    {
+      "article_number": 1021,
+      "field": "text_ar",
+      "expect_current": ")١( لا يلزم مالك العقار المرتفق به أن يقوم بأي عمل لمصلحة العاقر المرتفق إلا أن يكون عملا إضافيا يقتضيه استعمال الارتفاق على الوجه المألوف ما لم يشترط غير ذلك )٢ ) فإذا كان مالك العاقر المرتفق به هو المكلف بأن يقوم بتلك الأعمال على نفقته ، كان له دائما أن يتخلص من هذا التكليف بالتخلي عن العقار المرتفق به كله أو بعضه لمالك العقار المرتفق . )٣ ) وإذا كانت الأعمال نافعة أيضا لمالك العاقر المرتفق به ، كانت نفقة الصيانة على الطرفين كل بنسبة ما يعود عليه من الفائدة .",
+      "new": "لا يلزم مالك العقار المرتفق به أن يقوم بأي عمل لمصلحة العاقر المرتفق إلا أن يكون عملا إضافيا يقتضيه استعمال الارتفاق على الوجه المألوف ما لم يشترط غير ذلك",
+      "reason": "The PDF's Arabic Article 1021 also contains paragraphs 2 and 3 of Article 1022 (its marker is missing); those paragraphs move to 1022. The lone '(1)' prefix is dropped (1021 is a single paragraph; the PDF's English 1021 has no numbering).",
+      "source": "Structure confirmed by the PDF's own English text of Articles 1021 and 1022."
+    },
+    {
+      "article_number": 1022,
+      "field": "text_ar",
+      "expect_current": "",
+      "new": ")١( نفقة الأعمال اللازمة لاستعمال حق الارتفاق والمحافظة عليه تكون على مالك العقار المرتفق ما لم يشترط غير ذلك . )٢ ) فإذا كان مالك العاقر المرتفق به هو المكلف بأن يقوم بتلك الأعمال على نفقته ، كان له دائما أن يتخلص من هذا التكليف بالتخلي عن العقار المرتفق به كله أو بعضه لمالك العقار المرتفق . )٣ ) وإذا كانت الأعمال نافعة أيضا لمالك العاقر المرتفق به ، كانت نفقة الصيانة على الطرفين كل بنسبة ما يعود عليه من الفائدة .",
+      "reason": "Arabic marker and first paragraph of Article 1022 are absent from the PDF. Paragraphs 2 and 3 are the PDF's own words (moved from 1021, typos such as 'العاقر' left as in the source); paragraph 1 is ADDED from a secondary source.",
+      "source": "Paragraph 1: https://lawyeregypt.net/?p=10749 (a legal-information blog, NOT an official gazette; its wording matches the PDF's English Article 1022). Replace with the text of an authoritative edition (e.g. the Official Gazette / the Egyptian Civil Code as published by the Ministry of Justice) when available."
+    }
+  ]
+}
