@@ -60,7 +60,7 @@ Every "done" is backed by a test, a command you can run, or a file in this repo.
 No number in this repository was invented. Every figure is from a command that was run. Retrieval and abstention
 figures are measured on the REAL 1,149-article corpus with a 121-question eval set, of which 98 questions were drafted
 by an AI assistant from the article texts and have not been reviewed by a human expert - so they are real measurements
-of an unreviewed benchmark, and the 0.30 abstention threshold was tuned on that same set (optimistic). The faithfulness
+of an unreviewed benchmark, and the 0.25 abstention threshold and the lexical-overlap rule were tuned on that same set (optimistic). The faithfulness
 figures are a lexical proxy and are labelled `proxy` everywhere; they are never reported as RAGAS. The GPU-run numbers
 (latency, tokens/s, load test, the 16-question quantization check) are real measurements on a 1.5B model from one Kaggle
 session that PREDATES the real corpus (they used the 5-article sample), so they are indicative only. The MLflow grid was re-run on the real corpus (dense-only retrieval).

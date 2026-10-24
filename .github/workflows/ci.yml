@@ -32,7 +32,7 @@ jobs:
       - name: Tests (coverage gate lives in pyproject)
         run: pytest -q
       - name: Retrieval-quality gate (hit@1 / MRR / abstention vs data/eval/thresholds.json)
-        run: prodml-eval --compare --retriever hybrid-dense --k 1 --threshold 0.3 --check data/eval/thresholds.json --out reports/eval/latest.json
+        run: prodml-eval --compare --retriever hybrid-dense --k 1 --threshold 0.25 --check data/eval/thresholds.json --out reports/eval/latest.json
       - name: Faithfulness gate (offline proxy; fails the PR below 0.75)
         # This is the lexical PROXY, not RAGAS. Real RAGAS needs a judge-LLM key: run
         # `prodml-monitor --ragas --min-faithfulness 0.75` on a schedule with that secret instead.

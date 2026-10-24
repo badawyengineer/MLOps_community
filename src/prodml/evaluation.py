@@ -24,7 +24,7 @@ from typing import Any
 from prodml._console import ensure_utf8_output
 from prodml.config import settings
 from prodml.corpus import load_corpus, sample_corpus
-from prodml.retriever import RETRIEVERS, Retriever, build_retriever
+from prodml.retriever import RETRIEVERS, Retriever, build_retriever, is_lexically_supported
 
 DEFAULT_EVAL_PATH = Path("data/eval/questions.json")
 
@@ -38,8 +38,15 @@ def load_eval_set(path: Path = DEFAULT_EVAL_PATH) -> list[dict[str, Any]]:
 
 
 def evaluate(
-    retriever: Retriever, items: list[dict[str, Any]], k: int = 3, threshold: float = 0.0
+    retriever: Retriever,
+    items: list[dict[str, Any]],
+    k: int = 3,
+    threshold: float = 0.0,
+    min_overlap: int | None = None,
 ) -> dict[str, Any]:
+    """``min_overlap`` is the lexical-support requirement (None = the service's setting), so that the
+    metrics measure the abstention behaviour that actually ships."""
+    min_overlap = settings.min_lexical_overlap if min_overlap is None else min_overlap
     hits = recall_sum = rr_sum = false_abstain = 0.0
     correct_abstain = 0
     n_ans = n_unans = 0
@@ -48,7 +55,11 @@ def evaluate(
 
     for it in items:
         results = retriever.query(it["question"], top_k=k)
-        abstain = not results or results[0].score < threshold
+        abstain = (
+            not results
+            or results[0].score < threshold
+            or not is_lexically_supported(it["question"], results[0].article, min_overlap)
+        )
         if it["answerable"]:
             n_ans += 1
             relevant = set(it["relevant_articles"])

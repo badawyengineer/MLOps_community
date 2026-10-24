@@ -59,3 +59,10 @@ were not tested. Timings are from this small machine while no other job ran unle
 - Out-of-scope refusal is unreliable (`How do I bake sourdough bread?` is answered with confidence 0.388).
 - Arabic `ما تعريف عقد البيع؟` retrieves Articles 466/419 instead of 418.
 Both follow from the offline hashing embeddings and are quantified in the README ("Measured results"); a real multilingual embedding model is the expected fix.
+
+## Changes after this validation run
+
+The table above was measured on commit `428e77b`. A later commit added the lexical-support abstention check (`PRODML_MIN_LEXICAL_OVERLAP`),
+moved the default score threshold from 0.30 to 0.25 and re-derived the CI gates. Rows 6-7, and the two "NOT fixed" behavioural defects below,
+refer to the earlier behaviour: with the check, `How do I bake sourdough bread?` and `What is the penalty for drunk driving?` are refused (eval set:
+false-abstain 0.029, correct-abstain 0.842, hit@1 0.598). The full suite was re-run on that commit; see the commit's CI result.

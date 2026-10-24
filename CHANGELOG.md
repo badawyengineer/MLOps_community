@@ -1,5 +1,11 @@
 # Changelog (by handbook session)
 
+## Abstention: lexical-support check
+- New `PRODML_MIN_LEXICAL_OVERLAP` (default 2): the service and `prodml-eval` also refuse when the top article shares fewer than 2 content words
+  with the question (or fewer than half of a short question's words). Out-of-scope refusals 53% -> 84%, wrong refusals 11% -> 2.9%, hit@1 unchanged (0.598).
+  With it, the sweep's best score threshold is 0.25 (was 0.30); CI gates re-derived with `scripts/retune_gates.py`. Tests in `tests/test_abstention_guard.py`.
+- `/metadata` and `prodml-doctor` report the setting; `.env.example` documents it.
+
 ## Evaluation readiness (clean-machine audit)
 - **Missing tools implemented**: `prodml-mock-llm` and `prodml-alert-sink` were documented (README, runbooks, demo compose, notebook dry run) but were not in the repository or its Git history; they are now `src/prodml/mock_llm.py` and `alert_sink.py`, re-created from the documented interface, with tests. `prodml-evalgen` is still **not implemented** and its README row was removed. If you have the original versions locally, compare them before merging.
 - New `prodml-doctor` (config / corpus / optional-service check; `--online` probes configured endpoints; never prints secrets).

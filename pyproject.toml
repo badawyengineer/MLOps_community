@@ -3,6 +3,9 @@ name = "prodml"
 version = "0.1.0"
 description = "Arabic Legal Document Q&A — RAG service over the Egyptian Civil Code (ITI MLOps Practitioner final project, Track B)"
 requires-python = ">=3.10"
+readme = "README.md"
+authors = [{ name = "Abdelrahman Badawy" }]
+keywords = ["rag", "mlops", "arabic", "legal", "fastapi", "mlflow", "dvc"]
 dependencies = [
     "fastapi>=0.110",
     "uvicorn[standard]>=0.29",
@@ -42,6 +45,10 @@ fixtures = [
     "arabic-reshaper>=3.0",
     "python-bidi>=0.5",
 ]
+
+[project.urls]
+Repository = "https://github.com/badawyengineer/MLOps_community"
+Issues = "https://github.com/badawyengineer/MLOps_community/issues"
 
 [project.scripts]
 prodml-build-corpus = "prodml.corpus:main"

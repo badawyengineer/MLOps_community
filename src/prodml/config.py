@@ -43,7 +43,10 @@ class Settings(BaseSettings):
     retriever: str = (
         "hybrid-dense"  # "tfidf" | "bm25" | "hybrid" | "vector" | "hybrid-dense" | "embedding"
     )
-    min_confidence: float = 0.3  # abstain when the top score is below this (calibrate via eval)
+    min_lexical_overlap: int = (
+        2  # refuse when the top article shares fewer content words with the question (0 = off)
+    )
+    min_confidence: float = 0.25  # abstain when the top score is below this (calibrate via eval)
     max_context_chars: int = 4000
 
     # --- service ---
@@ -97,6 +100,10 @@ class Settings(BaseSettings):
             problems.append("PRODML_MIN_CONFIDENCE must be between 0 and 1")
         if not 1 <= self.port <= 65535:
             problems.append("PRODML_PORT must be between 1 and 65535")
+        if self.min_lexical_overlap < 0:
+            problems.append(
+                "PRODML_MIN_LEXICAL_OVERLAP must be >= 0 (0 disables the lexical-support check)"
+            )
         if self.top_k < 1:
             problems.append("PRODML_TOP_K must be >= 1")
         if self.generation_backend in {"vllm", "api"}:

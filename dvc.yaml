@@ -38,7 +38,7 @@ stages:
       - data/index                          # binary vectors: DVC-cached, not in Git
 
   evaluate:
-    cmd: python -m prodml.evaluation --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.3 --out reports/eval/latest.json --check data/eval/thresholds.json
+    cmd: python -m prodml.evaluation --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.25 --out reports/eval/latest.json --check data/eval/thresholds.json
     deps:
       - src/prodml/retriever.py
       - src/prodml/evaluation.py

@@ -149,7 +149,7 @@ def test_gate_targets_the_shipped_retriever_even_if_it_is_not_an_offline_baselin
             "--k",
             "1",
             "--threshold",
-            "0.3",
+            "0.25",
             "--check",
             str(gates),
             "--out",

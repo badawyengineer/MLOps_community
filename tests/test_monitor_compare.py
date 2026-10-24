@@ -22,7 +22,7 @@ def test_collect_scores_eval_set_with_proxy(predictor) -> None:
     report = monitor.collect(predictor, load_eval_set())
     assert report["source"] == "proxy" and report["n_answered"] > 10
     assert 0.9 <= report["faithfulness"] <= 1.0  # extractive answers quote their own context
-    assert 0.0 <= report["false_abstain_rate"] <= 0.2  # ~0.11 on the real corpus (threshold 0.3)
+    assert 0.0 <= report["false_abstain_rate"] <= 0.2  # ~0.11 on the real corpus (threshold 0.25)
 
 
 def test_push_builds_labelled_gauges_and_calls_gateway(monkeypatch) -> None:

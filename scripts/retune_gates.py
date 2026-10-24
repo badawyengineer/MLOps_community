@@ -1,7 +1,7 @@
 """Re-derive the CI regression gates (data/eval/thresholds.json) from a fresh evaluation.
 
-    prodml-eval --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.30 --out reports/eval/latest.json
-    python scripts/retune_gates.py --retriever hybrid-dense --threshold 0.30 [--margin 0.04] [--write]
+    prodml-eval --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.25 --out reports/eval/latest.json
+    python scripts/retune_gates.py --retriever hybrid-dense --threshold 0.25 [--margin 0.04] [--write]
 
 Prints the measured values, the abstention threshold the sweep found best (balanced accuracy -
 set PRODML_MIN_CONFIDENCE / config.py to it and re-run the eval at that value before --write),

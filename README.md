@@ -2,8 +2,28 @@
 
 [![CI/CD](https://github.com/badawyengineer/MLOps_community/actions/workflows/ci.yml/badge.svg)](https://github.com/badawyengineer/MLOps_community/actions/workflows/ci.yml)
 
-Ask a question in Arabic or English; get an answer **cited to Civil Code article numbers**, with a
-confidence score - or a refusal when the corpus doesn't cover the question.
+## At a glance
+
+Ask a legal question in Arabic or English and get an answer **cited to Civil Code article numbers**, with a confidence score, or an explicit
+refusal when the corpus does not cover it. Informational retrieval over statute text only; not legal advice.
+
+```mermaid
+flowchart LR
+    Q[Question<br/>Arabic or English] --> N[Normalize +<br/>tokenize]
+    N --> R[Hybrid retrieval<br/>BM25 + TF-IDF + dense]
+    R --> A{Abstain?<br/>score &lt; 0.25 or<br/>no shared wording}
+    A -- yes --> X[Refusal<br/>no sources]
+    A -- no --> G[Answer<br/>extractive or LLM]
+    G --> S[Guardrails<br/>PII + citation check]
+    S --> F[Faithfulness<br/>proxy / RAGAS]
+    F --> O[JSON answer<br/>+ article citations]
+    R -. metrics .-> M[(Prometheus<br/>Grafana)]
+    G -. traces .-> L[(Langfuse<br/>optional)]
+    E[prodml-eval<br/>+ CI gates] -. MLflow .-> T[(Experiments<br/>+ registry)]
+```
+
+Corpus: the real Egyptian Civil Code, 1,149 articles in Arabic and English, tracked with DVC. Everything runs offline by default; see
+[For evaluators](#for-evaluators-start-here). Documentation index: [docs/README.md](docs/README.md).
 
 > **Status:** 22 of the 34 handbook checklist items are done, 11 partial, 1 not done (real RAGAS needs a
 > judge-LLM key). Full list with evidence: **[reports/final-checklist.md](reports/final-checklist.md)**. The corpus is the **real
@@ -79,7 +99,7 @@ To use a real endpoint instead, set the same three variables (plus `PRODML_LLM_A
 | 2 | Data validation | `prodml-validate --strict --spot-check 20` | JSON -> OK / errors | core |
 | 3 | "Model" build | `prodml-index` | JSON -> `data/index/` (**retrieval index; this project trains no model**) | core |
 | 4 | Experiment tracking | `prodml-experiments --plot reports/mlflow_runs_comparison.png`, `prodml-eval --mlflow`, then `mlflow ui --backend-store-uri sqlite:///mlflow.db` | corpus + eval set -> `mlflow.db`, `mlruns/` (git-ignored), model registry | `[tracking]` |
-| 5 | Evaluation + CI gate | `prodml-eval --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.3 --check data/eval/thresholds.json --out reports/eval/latest.json` | eval set -> metrics, **exit 1 on regression** | core |
+| 5 | Evaluation + CI gate | `prodml-eval --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.25 --check data/eval/thresholds.json --out reports/eval/latest.json` | eval set -> metrics, **exit 1 on regression** | core |
 | 6 | Serving | `uvicorn prodml.api.main:app --port 8000` or `docker compose -f docker/docker-compose.yml up --build` | index -> HTTP API | core / Docker |
 | 7 | Monitoring | `GET /metrics`; `prodml-monitor --push <pushgateway>`; `docker compose ... --profile observability up` | answers -> Prometheus/Grafana/alerts | Docker for the stack |
 | 8 | CI/CD | `.github/workflows/ci.yml` (lint, tests, gate, index, smoke, Docker build/verify/publish), `monitor.yml` | push -> checks | GitHub; publish needs Docker Hub secrets |
@@ -92,9 +112,9 @@ results `reports/loadtest/`.
 ### Testing
 
 ```bash
-pytest                                    # 206 tests, ~89% coverage (gate: >=70%); ~6-7 min on 1 vCPU (needs ".[dev,tracking,pdf,fixtures]")
+pytest                                    # 216 tests, ~89% coverage (gate: >=70%); ~6-7 min on 1 vCPU (needs ".[dev,tracking,pdf,fixtures]")
 ruff check src tests && black --check src tests     # the lint step CI runs
-prodml-eval --retriever hybrid-dense --k 1 --threshold 0.3 --check data/eval/thresholds.json   # exits 1 if retrieval regresses
+prodml-eval --retriever hybrid-dense --k 1 --threshold 0.25 --check data/eval/thresholds.json   # exits 1 if retrieval regresses
 ```
 Results of a clean-machine run, with exact commands and outputs: **[docs/clean-machine-validation.md](docs/clean-machine-validation.md)**.
 
@@ -117,9 +137,12 @@ Results of a clean-machine run, with exact commands and outputs: **[docs/clean-m
 
 - **Retrieval quality is modest on the real corpus**: hit@1 0.60, hit@3 0.83 on the 121-question set. Example: asking for the
   definition of a sale contract in Arabic (`ما تعريف عقد البيع؟`) returns Articles 466/419, not 418.
-- **Abstention is weak**: `How do I bake sourdough bread?` is *answered* (confidence 0.388 > threshold 0.30), whereas
-  `How do I make a chocolate cake?` and `كيف أطبخ الكشري؟` are refused. 9 of 19 out-of-scope eval questions get answered.
-- The eval set is AI-drafted and unreviewed; the 0.30 threshold was tuned on it (optimistic).
+- **Abstention is good but not perfect**: out-of-scope questions are refused when the top score is below 0.25 *or* the top article
+  shares too few content words with the question (`PRODML_MIN_LEXICAL_OVERLAP`, default 2). On the eval set 16 of 19 out-of-scope questions are refused and 2.9% of
+  answerable ones are wrongly refused. Still answered: Arabic questions about marriage contracts, registering a joint-stock company and Egyptian nationality, which
+  genuinely share words with civil-law articles. Because the check is lexical, a question phrased with entirely different wording than the article can be refused even
+  though it is in scope.
+- The eval set is AI-drafted and unreviewed; the 0.25 threshold and the overlap rule were tuned on it (optimistic; the rule helped consistently on the original 23 and the new 98 items, and in both languages).
 - The Arabic text layer of the source PDF has OCR-style typos; Article 1022's first Arabic paragraph comes from a secondary source (`data/manual_fixes.json`).
 - **No model is trained here**: "model" = retrieval index. The LLM (Qwen2.5-1.5B) is served/quantized in the optional GPU notebook only, and those numbers predate the real corpus.
 - **Never run**: real RAGAS, real multilingual embeddings, a real Langfuse server, the Docker stack in this audit, the self-quantization script on a GPU.
@@ -155,8 +178,8 @@ Architecture (all five sessions): **[docs/architecture.md](docs/architecture.md)
 ## Measured results (real corpus - read the caveats)
 - **Corpus**: 1,149 articles from the real bilingual PDF; 56 are repealed placeholders (Articles 54-80 and 389-417, both read from the PDF's own repeal notes). **Article 1022 lost its Arabic marker and first paragraph in the source PDF**; `data/manual_fixes.json` restores it (paragraphs 2-3 are the PDF's own words moved from 1021; **paragraph 1 comes from a secondary, non-official source** - replace it with the Official Gazette text when you have it).
 - **Eval set**: 121 items (102 answerable, 19 out of scope; 67 Arabic, 54 English). The first 23 are the original bootstrap items; the rest were drafted by an AI assistant from the article texts and spot-checked against them. **Review them by hand before trusting any figure.**
-- **Retrieval** (shipped `hybrid-dense`, k=1, abstention threshold 0.30): hit@1 **0.598**, MRR 0.598 (hit@3 0.833); 11% of answerable questions are wrongly refused and 53% of out-of-scope questions are correctly refused. On the same set plain `hybrid` (BM25 + TF-IDF) gets hit@1 0.667 and `bm25` 0.657, so the lexical models beat the hashing-dense mix at k=1 and tie it at k=3. These numbers are far below the 0.94 measured on the 5-article sample: finding one article among 1,149 is much harder.
-- **Abstention is weak.** 9 of the 19 out-of-scope questions are still answered, including near-domain ones ("penalty for drunk driving" scores 0.53). The offline hashing/LSA embeddings cannot separate them from civil-liability articles; a real multilingual embedding model is the expected fix and has not been run. The 0.30 threshold is the balanced-accuracy optimum on this same set, so it is optimistic.
+- **Retrieval** (shipped `hybrid-dense`, k=1, abstention threshold 0.25 plus the lexical-support check): hit@1 **0.598**, MRR 0.598 (hit@3 0.833); **2.9% of answerable questions are wrongly refused and 84% of out-of-scope questions are correctly refused**. On the same set plain `hybrid` (BM25 + TF-IDF) gets hit@1 0.667 and `bm25` 0.657, so the lexical models beat the hashing-dense mix at k=1 and tie it at k=3. These numbers are far below the 0.94 measured on the 5-article sample: finding one article among 1,149 is much harder.
+- **Abstention history** (so the numbers can be audited): with the score threshold alone (0.30) only 53% of out-of-scope questions were refused (11% wrong refusals); `How do I bake sourdough bread?` scored 0.39 and was answered. Requiring shared wording between the question and the top article fixed that: 53% -> 89% correct refusals at the same threshold, and the sweep's best threshold moved to 0.25 (wrong refusals 11.8% -> 2.9%). Candidate rules were compared on the original 23, the new 98, Arabic-only and English-only subsets before adopting one; all agreed. A real multilingual embedding model could still do better and has not been run.
 - **Tried and dropped**: an English light stemmer gave no gain (hit@1 flat to -2 points), so it was not shipped.
 - **Source-document caveat**: the Arabic text layer contains OCR-style typos (for example `العاقر` for `العقار`), which slightly hurt Arabic retrieval; the English column is cleaner.
 - **Experiments** (12 runs, re-run on the real corpus; dense-only retrieval, so not comparable to the hybrid numbers above): best run `hashing-1024`, chunk 200, overlap 0 (registered as `legal-qa-retriever@champion`); the pure-LSA runs never abstain correctly. The shipped default is un-chunked; trying chunk 200 on the shipped `hybrid-dense` gave hit@1 0.63 (vs 0.60) but correct-abstain 0.37 (vs 0.53), a trade-off rather than a clear win, so the default was not changed.
@@ -203,7 +226,7 @@ median 880 ms, p95 about 4.1 s. English `/ask` p95 is about 1.1 s; Arabic `/ask`
 
 ## Configuration (environment variables)
 Copy `.env.example` to `.env` (git-ignored); every variable is optional and documented there. Real environment variables override `.env`.
-Prefix `PRODML_`: `RETRIEVER` (default `hybrid-dense`), `EMBEDDING_MODEL` (`hashing-1024` | `lsa-32` | `<org>/<hf-model>`), `MIN_CONFIDENCE` (0.3),
+Prefix `PRODML_`: `RETRIEVER` (default `hybrid-dense`), `EMBEDDING_MODEL` (`hashing-1024` | `lsa-32` | `<org>/<hf-model>`), `MIN_CONFIDENCE` (0.25), `MIN_LEXICAL_OVERLAP` (2; 0 disables the lexical-support check),
 `CHUNK_CHARS` / `CHUNK_OVERLAP` (0 = one chunk per article), `GENERATION_BACKEND` (`extractive` | `vllm` | `api`),
 `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY`, `LLM_PRICE_IN_PER_1K` / `_OUT_` (for the cost panel),
 `LANGFUSE_HOST` / `_PUBLIC_KEY` / `_SECRET_KEY` (all three or none), `REPEALED_RANGES` (`54-80,389-417`; ranges announced by the PDF itself are merged in).
@@ -229,6 +252,6 @@ src/prodml/      ingest, corpus, chunking, embedders, vectorstore, retriever, ra
                  faithfulness, tracing, drift, metrics, evaluation, experiments, monitor, reindex, smoke, bento_service, api/
 data/eval/       labelled questions + CI regression thresholds        loadtest/   locustfile
 docker/          Dockerfile, compose, Prometheus/Grafana/Alertmanager, canary    docs/   architecture, monitoring, gpu-runbook
-reports/         final-checklist, module reports, load test, eval results         tests/  206 tests + synthetic PDF fixture
+reports/         final-checklist, module reports, load test, eval results         tests/  216 tests + synthetic PDF fixture
 ```
 *Informational retrieval over statute text only; not legal advice.*

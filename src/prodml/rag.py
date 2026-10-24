@@ -25,7 +25,7 @@ from prodml.drift import EmbeddingDrift
 from prodml.faithfulness import faithfulness_proxy
 from prodml.guardrails import apply_guardrails
 from prodml.llm import LLMError, OpenAICompatClient, build_messages
-from prodml.retriever import Retriever, ScoredArticle, build_retriever
+from prodml.retriever import Retriever, ScoredArticle, build_retriever, is_lexically_supported
 from prodml.tracing import Tracer, now
 
 logger = logging.getLogger(__name__)
@@ -178,6 +178,7 @@ class LegalQAPredictor:
             "generation_backend": settings.generation_backend,
             "retriever": settings.retriever,
             "min_confidence": settings.min_confidence,
+            "min_lexical_overlap": settings.min_lexical_overlap,
             "loaded_at": self._loaded_at,
         }
 
@@ -199,7 +200,13 @@ class LegalQAPredictor:
             metrics.DRIFT_DROP.set(self._drift.drop_from_baseline)
         matches = self._retriever.query(question, top_k=self._top_k)
         confidence = round(matches[0].score, 4) if matches else 0.0
-        abstained = not matches or confidence < settings.min_confidence
+        abstained = (
+            not matches
+            or confidence < settings.min_confidence
+            or not is_lexically_supported(
+                question, matches[0].article, settings.min_lexical_overlap
+            )
+        )
         return Retrieval([] if abstained else matches, confidence, abstained)
 
     def _finish(

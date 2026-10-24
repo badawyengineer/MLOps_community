@@ -9,13 +9,13 @@ or an authoritative Arabic edition). The code and scripts are ready; these are t
 pip install -e ".[dev,tracking,fixtures,pdf,embeddings]"
 export PRODML_EMBEDDING_MODEL=intfloat/multilingual-e5-small     # Windows cmd: set PRODML_EMBEDDING_MODEL=...
 prodml-index                                                     # re-embeds 1,149 articles
-prodml-eval --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.30 --out reports/eval/latest.json
+prodml-eval --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.25 --out reports/eval/latest.json
 ```
 
 1. e5 models are asymmetric: the embedder already adds `passage: ` to articles and `query: ` to
    questions (`src/prodml/embedders.py`, tested without a download).
 2. **Re-tune the abstention threshold.** e5 cosine scores sit in a much narrower, higher band than the
-   hashing embeddings, so 0.30 will be wrong. Read `best threshold` from the sweep output, set it as
+   hashing embeddings, so 0.25 will be wrong. Also measure the lexical-support guard (`PRODML_MIN_LEXICAL_OVERLAP=2` vs `0`): a real semantic model can match without shared words. Read `best threshold` from the sweep output, set it as
    `PRODML_MIN_CONFIDENCE` (and `min_confidence` in `src/prodml/config.py` if you adopt the model), re-run
    `prodml-eval` at that threshold.
 3. Re-derive the CI gates from the measurement: `python scripts/retune_gates.py --threshold <T> --write`.
@@ -26,7 +26,7 @@ prodml-eval --compare --sweep --retriever hybrid-dense --k 1 --threshold 0.30 --
    `hashing-1024` as the default and set `PRODML_EMBEDDING_MODEL` only in deployment.
 
 Nothing here is guaranteed to improve abstention; measure it. The old numbers (hit@1 0.598, false-abstain
-0.108, correct-abstain 0.526) are the baseline to beat.
+0.108, correct-abstain 0.526) were the first baseline; the shipped system with the lexical-support check (false-abstain 0.029, correct-abstain 0.842) is the one to beat.
 
 ## B. Re-run the GPU notebook on the real corpus (Kaggle, 2x T4)
 

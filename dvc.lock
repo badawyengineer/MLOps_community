@@ -41,7 +41,7 @@ stages:
       size: 6213
   evaluate:
     cmd: python -m prodml.evaluation --compare --sweep --retriever hybrid-dense 
-      --k 1 --threshold 0.3 --out reports/eval/latest.json --check 
+      --k 1 --threshold 0.25 --out reports/eval/latest.json --check 
       data/eval/thresholds.json
     deps:
     - path: data/eval/questions.json
@@ -50,8 +50,8 @@ stages:
       size: 30578
     - path: data/eval/thresholds.json
       hash: md5
-      md5: b5569e56e8448afac1e5518d6e2bafc0
-      size: 624
+      md5: 8378223d19be678718c33cec3a685eaf
+      size: 593
     - path: data/processed/articles.json
       hash: md5
       md5: 500d1fa6b1bd5cd4d5ca6d92401c001d
@@ -62,17 +62,17 @@ stages:
       size: 11579
     - path: src/prodml/evaluation.py
       hash: md5
-      md5: 657415085205983eadf5e918440a0253
-      size: 8312
+      md5: bdbe7525e717d48dd76c0af74a4aae66
+      size: 8770
     - path: src/prodml/retriever.py
       hash: md5
-      md5: d304d0ebecd1424743bcc44ad3f5c9ce
-      size: 15888
+      md5: 6507e1bc694a932e851c8d2bbfbf3140
+      size: 17012
     outs:
     - path: reports/eval/latest.json
       hash: md5
-      md5: 5520cbe04eee82eb614be8e8c359cab8
-      size: 78753
+      md5: 49d618741a71ddce5cc470cd5f922df5
+      size: 72859
   build_index:
     cmd: python -m prodml.indexing
     deps:
@@ -94,8 +94,8 @@ stages:
       size: 1891
     - path: src/prodml/retriever.py
       hash: md5
-      md5: d304d0ebecd1424743bcc44ad3f5c9ce
-      size: 15888
+      md5: 6507e1bc694a932e851c8d2bbfbf3140
+      size: 17012
     - path: src/prodml/vectorstore.py
       hash: md5
       md5: 0373b19fe0ab4e40709cf605c81ab23e

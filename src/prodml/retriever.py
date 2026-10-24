@@ -170,6 +170,27 @@ def tokenize(text: str) -> list[str]:
     return tokens
 
 
+def lexical_support(question: str, article: Article) -> tuple[int, int]:
+    """(content words the question shares with the article, content words in the question)."""
+    q = set(tokenize(question))
+    text = set(tokenize(f"{article.get('text_ar', '')} {article.get('text_en', '')}"))
+    return len(q & text), len(q)
+
+
+def is_lexically_supported(question: str, article: Article, min_overlap: int) -> bool:
+    """False when the best match shares (almost) no wording with the question.
+
+    The offline hashing embeddings give out-of-scope questions accidental similarity to some article
+    ("How do I bake sourdough bread?" scores 0.39), so a score alone cannot refuse them. Requiring at
+    least ``min_overlap`` shared content words - or at least half of a short question's content words -
+    catches them. ``min_overlap = 0`` disables the check (use that with a real semantic embedding model,
+    which can legitimately match without shared words)."""
+    if min_overlap <= 0:
+        return True
+    shared, n = lexical_support(question, article)
+    return shared >= min_overlap or (n > 0 and shared / n >= 0.5)
+
+
 class Bm25Retriever:
     """Okapi BM25 over word tokens. Implemented directly (no extra dependency).
 

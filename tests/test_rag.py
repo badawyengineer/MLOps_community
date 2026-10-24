@@ -54,5 +54,5 @@ def test_in_scope_question_cites_and_does_not_abstain(trained_predictor: LegalQA
     result = trained_predictor.query_one("Must contracts be performed in good faith?")
     assert result["abstained"] is False
     assert result["sources"][0] == "Egyptian Civil Code, Article 148"
-    assert result["confidence"] >= 0.3
+    assert result["confidence"] >= 0.25
     assert "not legal advice" in result["disclaimer"]

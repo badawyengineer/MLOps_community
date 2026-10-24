@@ -66,7 +66,8 @@ def run_checks(online: bool = False) -> list[tuple[str, str, str]]:
         OK,
         "configuration",
         f"valid; backend={settings.generation_backend}, retriever={settings.retriever}, "
-        f"embedding={settings.embedding_model}, min_confidence={settings.min_confidence}",
+        f"embedding={settings.embedding_model}, min_confidence={settings.min_confidence}, "
+        f"min_lexical_overlap={settings.min_lexical_overlap}",
     )
 
     try:
